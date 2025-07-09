@@ -1,38 +1,188 @@
-.App {
-    text-align: center;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-.App-logo {
-    height: 40vmin;
-    pointer-events: none;
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-    .App-logo {
-        animation: App-logo-spin infinite 20s linear;
-    }
+/* Custom animations */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
-.App-header {
-    background-color: #0f0f10;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: calc(10px + 2vmin);
-    color: white;
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-.App-link {
-    color: #61dafb;
+/* Custom gradient backgrounds */
+.bg-gradient-to-br {
+  background-image: linear-gradient(to bottom right, var(--tw-gradient-stops));
 }
 
-@keyframes App-logo-spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
+.bg-gradient-to-r {
+  background-image: linear-gradient(to right, var(--tw-gradient-stops));
+}
+
+/* Hover effects */
+.transform {
+  transform: translateX(0) translateY(0) rotate(0) skewX(0) skewY(0) scaleX(1) scaleY(1);
+}
+
+.hover\:scale-105:hover {
+  transform: scale(1.05);
+}
+
+/* Smooth transitions */
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.duration-200 {
+  transition-duration: 200ms;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #374151;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #6B7280;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #9CA3AF;
+}
+
+/* Button focus states */
+button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+}
+
+/* Responsive design */
+@media (max-width: 640px) {
+  .container {
+    padding: 1rem;
+  }
+}
+
+/* Voice chat indicators */
+.voice-indicator {
+  position: relative;
+  overflow: hidden;
+}
+
+.voice-indicator::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.voice-indicator:hover::before {
+  left: 100%;
+}
+
+/* Loading spinner */
+.spinner {
+  border: 2px solid #374151;
+  border-top: 2px solid #60A5FA;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Status badges */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.status-idle {
+  background-color: #374151;
+  color: #9CA3AF;
+}
+
+.status-searching {
+  background-color: #F59E0B;
+  color: #FFFFFF;
+}
+
+.status-connected {
+  background-color: #10B981;
+  color: #FFFFFF;
+}
+
+/* Audio visualizer placeholder */
+.audio-visualizer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  background: linear-gradient(45deg, #1F2937, #374151);
+  border-radius: 8px;
+  margin: 0.5rem 0;
+}
+
+.audio-bar {
+  width: 3px;
+  height: 20px;
+  background: #60A5FA;
+  margin: 0 1px;
+  animation: audioWave 1s ease-in-out infinite;
+}
+
+.audio-bar:nth-child(2) { animation-delay: 0.1s; }
+.audio-bar:nth-child(3) { animation-delay: 0.2s; }
+.audio-bar:nth-child(4) { animation-delay: 0.3s; }
+.audio-bar:nth-child(5) { animation-delay: 0.4s; }
+
+@keyframes audioWave {
+  0%, 100% { height: 20px; }
+  50% { height: 5px; }
+}
+
+/* Dark mode optimizations */
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #111827;
+    color: #F9FAFB;
+  }
 }
