@@ -178,7 +178,154 @@ button:focus {
   0%, 100% { height: 20px; }
   50% { height: 5px; }
 }
+.animated-background {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  overflow: hidden;
+  position: relative;
+}
 
+.background-animation {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.balls {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.ball {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  width: var(--size, 15px);
+  height: var(--size, 15px);
+  animation: float var(--duration, 20s) ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+  left: var(--left, 0%);
+  top: var(--top, 0%);
+  pointer-events: none;
+}
+
+.ball:nth-child(even) {
+  background: rgba(255, 255, 255, 0.05);
+  animation-direction: reverse;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) translateX(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-20px) translateX(10px) rotate(5deg);
+  }
+  50% {
+    transform: translateY(-40px) translateX(-15px) rotate(10deg);
+  }
+  75% {
+    transform: translateY(-20px) translateX(-10px) rotate(5deg);
+  }
+}
+/* Стили для выпадающего списка категорий */
+.absolute {
+  position: absolute;
+}
+
+.z-20 {
+  z-index: 20;
+}
+
+.max-h-60 {
+  max-height: 15rem;
+}
+
+.overflow-y-auto {
+  overflow-y: auto;
+}
+
+/* Кастомный скроллбар */
+.overflow-y-auto::-webkit-scrollbar {
+  width: 6px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+  background: #374151;
+  border-radius: 3px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  background: #6b7280;
+  border-radius: 3px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+/* Анимации для счетчика */
+@keyframes pulse-glow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-2px); }
+}
+
+.online-counter {
+  animation: float 3s ease-in-out infinite;
+}
+
+.pulse-dot {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Градиентный текст для счетчика */
+.gradient-text {
+  background: linear-gradient(135deg, #a78bfa 0%, #c084fc 50%, #f0abfc 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Стили для анимированного фона счетчика */
+.counter-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.counter-container::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.1) 0%, transparent 70%);
+  animation: rotate-background 10s linear infinite;
+}
+
+@keyframes rotate-background {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+@keyframes twinkle {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 1; }
+}
+
+.animate-twinkle {
+  animation: twinkle 3s ease-in-out infinite;
+}
 /* Dark mode optimizations */
 @media (prefers-color-scheme: dark) {
   body {
