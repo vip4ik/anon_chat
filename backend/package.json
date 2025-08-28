@@ -1,0 +1,23 @@
+{
+  "name": "anon_chat",
+  "version": "1.0.0",
+  "description": "voice_chat",
+  "main": "package",
+  "scripts": {
+    "test": "package",
+    "start": "node server.py"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vip4ik/anon_chat.git#main"
+  },
+  "author": "vip4ik",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vip4ik/anon_chat/issues"
+  },
+  "homepage": "https://github.com/vip4ik/anon_chat/tree/main#readme",
+  "dependencies": {
+    "ws": "^8.18.3"
+  }
+}
