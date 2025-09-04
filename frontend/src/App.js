@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./App.css";
+import "./favicon.ico";
 
 // Защита от копирования
 const disableCopy = (e) => {
@@ -38,6 +39,45 @@ const CATEGORIES = [
   { id: 'advice', name: 'Советы', icon: '💡', description: 'Получить или дать совет' },
   { id: 'games', name: 'Игры', icon: '🎮', description: 'Обсудить игры и хобби' }
 ];
+
+// Компонент модального окна для системных сообщений
+const SystemMessageModal = ({ message, isVisible, onClose }) => {
+  if (!isVisible) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-opacity duration-300">
+      <div className="bg-gradient-to-br from-gray-800 to-gray-900 border border-purple-500/30 rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl animate-scale-in">
+        <div className="text-center mb-6">
+          <div className="w-16 h-16 bg-purple-600/20 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h3 className="text-xl font-bold text-white mb-2">Системное сообщение</h3>
+          <p className="text-gray-300 text-sm leading-relaxed">{message}</p>
+        </div>
+        
+        <button
+          onClick={onClose}
+          className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:from-purple-700 hover:to-blue-700 transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0"
+        >
+          Понятно
+        </button>
+        
+        <div className="absolute top-4 right-4">
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-white transition-colors duration-200"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 // Компонент счетчика пользователей онлайн
 const OnlineUsersCounter = () => {
@@ -83,28 +123,71 @@ const OnlineUsersCounter = () => {
   };
 
   return (
-    <div className="flex items-center justify-center mb-4 space-x-1"> {/* Уменьшили space-x с 2 до 1 */}
-  {/* Анимированный счетчик и текст в одной строке */}
+    <div className="flex items-center justify-center mb-4 space-x--5">
+      <div className="relative">
+        <div className={`
+          text-lg font-semibold transition-all duration-400
+          ${isGrowing ? 'text-green-400 scale-110' : 'text-purple-300'}
+        `}>
+          <span className="inline-block min-w-[60px]">
+            {formatCount(onlineCount)}
+          </span>
+        </div>
+      </div>
+      
+      <div className="flex items-center space-x-2">
   <div className="relative">
-    <div className={`
-      text-lg font-semibold transition-all duration-400
-      ${isGrowing ? 'text-green-400 scale-110' : 'text-purple-300'}
-    `}>
-      <span className="inline-block min-w-[60px]">
-        {formatCount(onlineCount)}
-      </span>
-    </div>
+    <div className="w-2 h-2 bg-green-500 rounded-full animate-ping absolute"></div>
+    <div className="w-2 h-2 bg-green-500 rounded-full relative"></div>
   </div>
+        <span className="text-sm text-gray-400 font-medium">онлайн сейчас</span>
+      </div>
+    </div>
+  );
+};
+
+// Компонент таймера разговора
+const ConversationTimer = ({ isActive, onReset }) => {
+  const [time, setTime] = useState(0);
   
-  {/* Текст "онлайн сейчас" */}
-  <div className="flex items-center space-x-1">
-    <div className="relative">
-      <div className="w-2 h-2 bg-green-500 rounded-full animate-ping absolute"></div>
-      <div className="w-2 h-2 bg-green-500 rounded-full relative"></div>
+  useEffect(() => {
+    let interval = null;
+    
+    if (isActive) {
+      interval = setInterval(() => {
+        setTime(prevTime => prevTime + 1);
+      }, 1000);
+    } else if (!isActive && time !== 0) {
+      clearInterval(interval);
+    }
+    
+    return () => clearInterval(interval);
+  }, [isActive, time]);
+  
+  useEffect(() => {
+    if (!isActive) {
+      setTime(0);
+    }
+  }, [isActive]);
+  
+  // Форматирование времени в часы:минуты:секунды
+  const formatTime = (seconds) => {
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    
+    return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+  
+  if (!isActive) return null;
+  
+  return (
+    <div className="bg-gray-700/50 backdrop-blur-sm p-3 rounded-lg mb-4 text-center">
+      <div className="text-sm text-gray-300 mb-1">Время разговора</div>
+      <div className="text-xl font-mono font-bold text-purple-400">
+        {formatTime(time)}
+      </div>
     </div>
-    <span className="text-sm text-gray-400 font-medium">онлайн сейчас</span>
-  </div>
-</div>
   );
 };
 
@@ -139,6 +222,9 @@ function App() {
   const [showCategories, setShowCategories] = useState(false);
   const [userGender, setUserGender] = useState('any');
   const [searchGender, setSearchGender] = useState('any');
+  const [isConversationActive, setIsConversationActive] = useState(false);
+  const [systemMessage, setSystemMessage] = useState('');
+  const [showSystemMessage, setShowSystemMessage] = useState(false);
   
   const wsRef = useRef(null);
   const peerConnectionRef = useRef(null);
@@ -207,6 +293,11 @@ function App() {
         setUserStatus('idle');
         setStatusMessage(message.message || 'Не удалось найти собеседника');
         break;
+      case 'system_message':
+        // Обработка системного сообщения
+        setSystemMessage(message.message || 'Системное сообщение');
+        setShowSystemMessage(true);
+        break;
       case 'error':
         setStatusMessage(message.message || 'Произошла ошибка');
         break;
@@ -219,6 +310,7 @@ function App() {
     setUserStatus('idle');
     setPartnerId(null);
     setRoomId(null);
+    setIsConversationActive(false);
     setStatusMessage(customMessage || 'Собеседник отключился');
     playSound();
     cleanupVoiceChat();
@@ -253,6 +345,7 @@ function App() {
         const [remoteStream] = event.streams;
         setRemoteStream(remoteStream);
         setStatusMessage('Соединение установлено! Говорите свободно');
+        setIsConversationActive(true);
       };
       
       peerConnection.onicecandidate = (event) => {
@@ -340,12 +433,13 @@ function App() {
     setRemoteStream(null);
     setIsVoiceEnabled(false);
     setIsMicMuted(false);
+    setIsConversationActive(false);
   };
 
   const startSearch = () => {
     const searchData = {
       type: 'start_search',
-      search_params: {  // ИСПРАВЛЕНО: search_params вместо category
+      search_params: {
         category: selectedCategory,
         user_gender: userGender,
         search_gender: searchGender,
@@ -442,6 +536,13 @@ function App() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 relative">
+      {/* Модальное окно для системных сообщений */}
+      <SystemMessageModal
+        message={systemMessage}
+        isVisible={showSystemMessage}
+        onClose={() => setShowSystemMessage(false)}
+      />
+      
       <div 
         className="bg-gray-800 rounded-2xl shadow-2xl p-8 w-full max-w-md border border-gray-700 z-10 relative"
         onCopy={disableCopy}
@@ -469,7 +570,7 @@ function App() {
                 strokeLinejoin="round"
               />
               <path 
-                d="M18 12C18 15.3137 15.3137 18 12 18C8.68629 18 6 极速 15.3137 6 12" 
+                d="M18 12C18 15.3137 15.3137 18 12 18C8.68629 18 6 15.3137 6 12" 
                 stroke="url(#gradient)" 
                 strokeWidth="2" 
                 strokeLinecap="round" 
@@ -499,8 +600,8 @@ function App() {
           </div>
           
           <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-cyan-500 mb-2">
-      ГОЛОСОВАЯ РУЛЕТКА
-    </h1>
+            ГОЛОСОВАЯ РУЛЕТКА
+          </h1>
           <p 
             className="text-gray-400 mb-4"
             onCopy={disableCopy}
@@ -513,6 +614,9 @@ function App() {
           <OnlineUsersCounter />
 
         </div>
+
+        {/* ТАЙМЕР РАЗГОВОРА */}
+        <ConversationTimer isActive={isConversationActive} />
 
         {/* Блок выбора категорий и настроек */}
         {userStatus === 'idle' && (
@@ -537,7 +641,7 @@ function App() {
                 </button>
                 
                 {showCategories && (
-                  <div className="absolute z-20 w-full mt-1 bg-gray-700 border border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                  <div className="absolute z-50 w-full mt-1 bg-gray-700 border border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto">
                     {CATEGORIES.map((category) => (
                       <button
                         key={category.id}
@@ -615,29 +719,31 @@ function App() {
           onContextMenu={disableContextMenu}
         >
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-gray-400">Статус:</span>
-            <div className="flex items-center">
-              <span className={`relative flex h-3 w-3 mr-2 ${
-                userStatus === 'searching' ? 'animate-ping' : ''
-              }`}>
-                <span className={`animate-ping absolute inline-flex h-full w-full rounded-full ${
-                  userStatus === 'searching' ? 'bg-yellow-400' : 
-                  userStatus === 'connected' ? 'bg-green-400' : 'bg-gray-400'
-                } opacity-75`}></span>
-                <span className={`relative inline-flex rounded-full h-3 w-3 ${
-                  userStatus === 'searching' ? 'bg-yellow-500' : 
-                  userStatus === 'connected' ? 'bg-green-500' : 'bg-gray-500'
-                }`}></span>
-              </span>
-              <span className={`text-sm font-semibold ${
-                userStatus === 'searching' ? 'text-yellow-400' : 
-                userStatus === 'connected' ? 'text-green-400' : 'text-gray-400'
-              }`}>
-                {userStatus === 'searching' ? 'Поиск...' : 
-                 userStatus === 'connected' ? 'В разговоре' : 'Готов'}
-              </span>
-            </div>
-          </div>
+  <span className="text-sm text-gray-400">Статус:</span>
+  <div className="flex items-center">
+    {!showCategories && (
+      <span className={`relative flex h-3 w-3 mr-2 ${
+        userStatus === 'searching' ? 'animate-ping' : ''
+      }`}>
+        <span className={`animate-ping absolute inline-flex h-full w-full rounded-full ${
+          userStatus === 'searching' ? 'bg-yellow-400' : 
+          userStatus === 'connected' ? 'bg-green-400' : 'bg-gray-400'
+        } opacity-75`}></span>
+        <span className={`relative inline-flex rounded-full h-3 w-3 ${
+          userStatus === 'searching' ? 'bg-yellow-500' : 
+          userStatus === 'connected' ? 'bg-green-500' : 'bg-gray-500'
+        }`}></span>
+      </span>
+    )}
+    <span className={`text-sm font-semibold ${
+      userStatus === 'searching' ? 'text-yellow-400' : 
+      userStatus === 'connected' ? 'text-green-400' : 'text-gray-400'
+    }`}>
+      {userStatus === 'searching' ? 'Поиск...' : 
+       userStatus === 'connected' ? 'В разговоре' : 'Готов'}
+    </span>
+  </div>
+</div>
           <div className="text-center">
             <p className="text-sm text-gray-300">{statusMessage}</p>
           </div>
@@ -683,20 +789,20 @@ function App() {
               <div className="flex items-center space-x-3 mb-4">
                 <span className="text-gray-300">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1极速h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 极速15z" clipRule="evenodd" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" clipRule="evenodd" />
                   </svg>
                 </span>
                 <div className="relative w-full flex items-center">
                   <input
-                    type="range"
-                    min="0"
-                    max="1"
-                    step="0.01"
-                    value={volume}
-                    onChange={(e) => setVolume(parseFloat(e.target.value))}
-                    className="w-full h-1.5 bg-gray-600 rounded-full appearance-none cursor-pointer accent-purple-500 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-purple-500 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:shadow-lg"
-                    onContextMenu={disableContextMenu}
-                  />
+  type="range"
+  min="0"
+  max="1"
+  step="0.01"
+  value={volume}
+  onChange={(e) => setVolume(parseFloat(e.target.value))}
+  className="w-full h-1.5 bg-gray-600 rounded-full appearance-none cursor-pointer accent-purple-500 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-purple-500 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:shadow-lg"
+  onContextMenu={disableContextMenu}
+/>
                   <div 
                     className="absolute h-1.5 bg-purple-500 rounded-full pointer-events-none"
                     style={{ width: `${volume * 100}%` }}
@@ -728,7 +834,7 @@ function App() {
                     ) : (
                       <>
                         <svg className="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
                         </svg>
                         Выкл микрофон
                       </>
@@ -749,7 +855,7 @@ function App() {
                     </svg>
                     Стоп
                   </span>
-                  <span className="absolute inset-0 bg-white opacity-0 hover:opacity-10 transition-opacity duration极速-300"></span>
+                  <span className="absolute inset-0 bg-white opacity-0 hover:opacity-10 transition-opacity duration-300"></span>
                 </button>
                 
                 <button
