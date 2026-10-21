@@ -37,6 +37,45 @@
             border-radius: 2px;
             transition: height 0.1s ease;
         }
+        .toggle-maintenance {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+        .toggle-maintenance input { 
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .toggle-maintenance-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #4B5563;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        .toggle-maintenance-slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .toggle-maintenance-slider {
+            background-color: #10B981;
+        }
+        input:checked + .toggle-maintenance-slider:before {
+            transform: translateX(30px);
+        }
     </style>
 </head>
 <body class="min-h-screen bg-gray-900 text-white">
@@ -44,7 +83,7 @@
     <div id="loginForm" class="fixed inset-0 flex items-center justify-center login-form bg-black bg-opacity-50 z-50">
         <div class="bg-gray-800 p-8 rounded-xl shadow-2xl w-96">
             <h2 class="text-2xl font-bold mb-6 text-center">Авторизация</h2>
-            <form id="loginFormElement" onsubmit="handleLogin(event); return false;">
+            <form id="loginFormElement">
                 <div class="mb-4">
                     <label class="block text-sm font-medium mb-2">Логин</label>
                     <input type="text" id="username" required
@@ -57,219 +96,270 @@
                         class="w-full bg-gray-700 border border-gray-600 rounded px-4 py-3 focus:outline-none focus:border-purple-500"
                         placeholder="Введите пароль" value="admin123"/>
                 </div>
-                <button type="submit"
+                <button type="button" onclick="handleLogin()"
                     class="w-full bg-purple-600 hover:bg-purple-700 py-3 px-4 rounded font-medium transition-colors">
                     Войти
                 </button>
                 <div id="loginError" class="text-red-400 text-sm mt-3 hidden">
                     Неверный логин или пароль
                 </div>
+                <div id="rateLimitError" class="text-red-400 text-sm mt-3 hidden">
+                    Слишком много попыток. Попробуйте через 5 минут.
+                </div>
             </form>
         </div>
     </div>
 
     <!-- Основной контент панели -->
-    <div id="adminPanel" class="hidden">
-        <div class="p-6">
-            <div class="max-w-7xl mx-auto">
-                <div class="flex justify-between items-center mb-8">
-                    <h1 class="text-3xl font-bold">Панель управления голосовым чатом</h1>
+    <div id="adminPanel" class="hidden p-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex justify-between items-center mb-8">
+                <h1 class="text-3xl font-bold">Панель управления голосовым чатом</h1>
+                <div class="flex gap-2">
+                    <button onclick="toggleMaintenance()" class="bg-yellow-600 hover:bg-yellow-700 px-4 py-2 rounded">
+                        Заглушка
+                    </button>
                     <button onclick="logout()" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded">
                         Выйти
                     </button>
                 </div>
-                
-                <!-- Статистика -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8" id="statsContainer">
-                    <div class="bg-gray-800 p-6 rounded-lg">
-                        <h3 class="text-lg font-semibold mb-2">Всего пользователей</h3>
-                        <p class="text-3xl font-bold text-purple-400" id="totalUsers">0</p>
-                    </div>
-                    <div class="bg-gray-800 p-6 rounded-lg">
-                        <h3 class="text-lg font-semibold mb-2">Онлайн сейчас</h3>
-                        <p class="text-3xl font-bold text-green-400" id="onlineUsers">0</p>
-                    </div>
-                    <div class="bg-gray-800 p-6 rounded-lg">
-                        <h3 class="text-lg font-semibold mb-2">Активных комнат</h3>
-                        <p class="text-3xl font-bold text-blue-400" id="activeRooms">0</p>
-                    </div>
-                    <div class="bg-gray-800 p-6 rounded-lg">
-                        <h3 class="text-lg font-semibold mb-2">В поиске</h3>
-                        <p class="text-3xl font-bold text-yellow-400" id="searchingUsers">0</p>
-                    </div>
-                    <div class="bg-gray-800 p-6 rounded-lg">
-                        <h3 class="text-lg font-semibold mb-2">Мониторится</h3>
-                        <p class="text-3xl font-bold text-pink-400" id="monitoredRooms">0</p>
-                    </div>
+            </div>
+            
+            <!-- Статистика -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8" id="statsContainer">
+                <div class="bg-gray-800 p-6 rounded-lg">
+                    <h3 class="text-lg font-semibold mb-2">Всего пользователей</h3>
+                    <p class="text-3xl font-bold text-purple-400" id="totalUsers">0</p>
                 </div>
+                <div class="bg-gray-800 p-6 rounded-lg">
+                    <h3 class="text-lg font-semibold mb-2">Онлайн сейчас</h3>
+                    <p class="text-3xl font-bold text-green-400" id="onlineUsers">0</p>
+                </div>
+                <div class="bg-gray-800 p-6 rounded-lg">
+                    <h3 class="text-lg font-semibold mb-2">Активных комнат</h3>
+                    <p class="text-3xl font-bold text-blue-400" id="activeRooms">0</p>
+                </div>
+                <div class="bg-gray-800 p-6 rounded-lg">
+                    <h3 class="text-lg font-semibold mb-2">В поиске</h3>
+                    <p class="text-3xl font-bold text-yellow-400" id="searchingUsers">0</p>
+                </div>
+                <div class="bg-gray-800 p-6 rounded-lg">
+                    <h3 class="text-lg font-semibold mb-2">Мониторится</h3>
+                    <p class="text-3xl font-bold text-pink-400" id="monitoredRooms">0</p>
+                </div>
+            </div>
 
-                <!-- Мониторинг комнат -->
-                <div class="bg-gray-800 p-6 rounded-lg mb-8">
-                    <h2 class="text-xl font-semibold mb-4">🎧 Мониторинг комнат</h2>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                        <div>
-                            <h3 class="text-lg font-medium mb-3">Начать прослушивание</h3>
-                            <div class="flex gap-2 mb-3">
-                                <input type="text" placeholder="ID комнаты..." 
-                                    class="flex-1 bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
-                                    id="monitorRoomId"/>
-                                <button onclick="startMonitoring()"
-                                    class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded">
-                                    ▶️ Слушать
-                                </button>
-                            </div>
-                            <div class="text-sm text-gray-400 mb-4">
-                                💡 Для получения ID комнаты проверьте активные подключения
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <h3 class="text-lg font-medium mb-3">Активные мониторы</h3>
-                            <div id="activeMonitors" class="text-sm text-gray-300 bg-gray-700 p-3 rounded max-h-32 overflow-y-auto">
-                                Загрузка...
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Панель прослушивания -->
-                    <div id="audioMonitor" class="hidden bg-gray-900 p-6 rounded-lg border border-blue-500">
-                        <div class="flex justify-between items-center mb-4">
-                            <h4 class="text-lg font-medium">🎧 Прослушивание комнаты: 
-                                <span id="currentRoomId" class="font-mono bg-blue-900 px-2 py-1 rounded"></span>
-                            </h4>
-                            <button onclick="stopMonitoring()"
-                                class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded text-sm">
-                                ⏹️ Остановить
+            <!-- Управление -->
+            <div class="bg-gray-800 p-6 rounded-lg mb-8">
+                <h2 class="text-xl font-semibold mb-4">⚙️ Управление системой</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <h3 class="text-lg font-medium mb-3">📢 Системное сообщение</h3>
+                        <div class="flex gap-2">
+                            <input type="text" placeholder="Введите сообщение..."
+                                class="flex-1 bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-purple-500"
+                                id="systemMessage"/>
+                            <button onclick="sendSystemMessage()"
+                                class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded">
+                                Отправить
                             </button>
                         </div>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <div class="flex items-center space-x-3 mb-4">
-                                    <div class="w-3 h-3 bg-red-500 rounded-full" id="audioIndicator"></div>
-                                    <span class="text-sm" id="monitorStatus">Подключение...</span>
-                                    <div class="audio-wave" id="audioWave">
-                                        <!-- Wave bars will be generated here -->
-                                    </div>
-                                </div>
-                                
-                                <div class="bg-gray-800 p-4 rounded">
-                                    <h5 class="font-medium mb-2">📊 Активность</h5>
-                                    <div id="activityStats">
-                                        <div>Получено аудио: <span id="audioChunksCount">0</span></div>
-                                        <div>Последнее: <span id="lastAudioTime">-</span></div>
-                                        <div>Буфер сервера: <span id="serverBufferSize">0</span> чанков</div>
-                                    </div>
-                                </div>
-
-                                <!-- Controls for audio playback -->
-                                <div class="mt-4 bg-gray-800 p-4 rounded">
-                                    <h5 class="font-medium mb-3">🎵 Управление аудио</h5>
-                                    <div class="flex gap-2">
-                                        <button onclick="toggleAudioPlayback()" id="playPauseBtn" 
-                                            class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded">
-                                            ▶️ Воспроизвести
-                                        </button>
-                                        <button onclick="downloadAudio()" 
-                                            class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded">
-                                            💾 Скачать
-                                        </button>
-                                        <button onclick="clearAudioBuffer()" 
-                                            class="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded">
-                                            🗑️ Очистить
-                                        </button>
-                                        <button onclick="updateServerBufferSize()" 
-                                            class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded">
-                                            🔄 Обновить
-                                        </button>
-                                    </div>
-                                    <div class="mt-2 text-xs text-gray-400">
-                                        Локальный буфер: <span id="audioBufferSize">0</span> записей
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div>
-                                <h5 class="font-medium mb-2">👥 Участники комнаты</h5>
-                                <div id="participantsList" class="space-y-2">
-                                    <!-- Участники будут здесь -->
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Аудиоплееры для каждого участника -->
-                        <div class="mt-6">
-                            <h5 class="font-medium mb-3">🎵 Аудиопотоки участников</h5>
-                            <div id="audioPlayers" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <!-- Аудиоплееры будут создаваться динамически -->
-                            </div>
-                        </div>
                     </div>
-                </div>
-
-                <!-- Управление -->
-                <div class="bg-gray-800 p-6 rounded-lg mb-8">
-                    <h2 class="text-xl font-semibold mb-4">⚙️ Управление системой</h2>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <h3 class="text-lg font-medium mb-3">📢 Системное сообщение</h3>
-                            <div class="flex gap-2">
-                                <input type="text" placeholder="Введите сообщение..."
-                                    class="flex-1 bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-purple-500"
-                                    id="systemMessage"/>
-                                <button onclick="sendSystemMessage()"
-                                    class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded">
-                                    Отправить
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <h3 class="text-lg font-medium mb-3">🚨 Действия</h3>
-                            <div class="flex gap-2">
-                                <button onclick="emergencyStop()" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded">
-                                    🔴 Экстренная остановка
-                                </button>
-                                <button onclick="refreshData()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded">
-                                    🔄 Обновить данные
-                                </button>
-                            </div>
+                    <div>
+                        <h3 class="text-lg font-medium mb-3">🚨 Действия</h3>
+                        <div class="flex gap-2">
+                            <button onclick="emergencyStop()" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded">
+                                🔴 Экстренная остановка
+                            </button>
+                            <button onclick="refreshData()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded">
+                                🔄 Обновить данные
+                            </button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Активные подключения -->
-                <div class="bg-gray-800 p-6 rounded-lg">
+                <!-- Управление заглушкой -->
+                <div class="mt-6 pt-6 border-t border-gray-700">
+                    <h3 class="text-lg font-medium mb-3">🔧 Режим технических работ</h3>
+                    <div class="flex items-center justify-between bg-gray-700 p-4 rounded-lg">
+                        <div>
+                            <h4 class="font-medium">Включить заглушку сайта</h4>
+                            <p class="text-sm text-gray-400">При включении пользователи увидят страницу с сообщением о технических работах</p>
+                        </div>
+                        <label class="toggle-maintenance">
+                            <input type="checkbox" id="maintenanceToggle" onchange="toggleMaintenanceMode()">
+                            <span class="toggle-maintenance-slider"></span>
+                        </label>
+                    </div>
+                    <div class="mt-4 bg-gray-700 p-4 rounded-lg">
+                        <h4 class="font-medium mb-2">Настройки заглушки</h4>
+                        <textarea id="maintenanceMessage" rows="3" class="w-full bg-gray-600 border border-gray-500 rounded px-3 py-2 focus:outline-none focus:border-blue-500" placeholder="Введите сообщение для пользователей...">Мы улучшаем наш сервис, чтобы сделать ваше общение еще лучше. Скоро мы вернемся с обновлениями!</textarea>
+                        <div class="flex gap-2 mt-3">
+                            <button onclick="updateMaintenanceSettings()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-sm">
+                                Сохранить настройки
+                            </button>
+                            <button onclick="previewMaintenance()" class="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded text-sm">
+                                Предпросмотр
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Мониторинг комнат -->
+            <div class="bg-gray-800 p-6 rounded-lg mb-8">
+                <h2 class="text-xl font-semibold mb-4">🎧 Мониторинг комнат</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <h3 class="text-lg font-medium mb-3">Начать прослушивание</h3>
+                        <div class="flex gap-2 mb-3">
+                            <input type="text" placeholder="ID комнаты..." 
+                                class="flex-1 bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
+                                id="monitorRoomId"/>
+                            <button onclick="startMonitoring()"
+                                class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded">
+                                ▶️ Слушать
+                            </button>
+                        </div>
+                        <div class="text-sm text-gray-400 mb-4">
+                            💡 Для получения ID комнаты проверьте активные подключения
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-lg font-medium mb-3">Активные мониторы</h3>
+                        <div id="activeMonitors" class="text-sm text-gray-300 bg-gray-700 p-3 rounded max-h-32 overflow-y-auto">
+                            Загрузка...
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Панель прослушивания -->
+                <div id="audioMonitor" class="hidden bg-gray-900 p-6 rounded-lg border border-blue-500">
                     <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-xl font-semibold">🔗 Активные подключения</h2>
-                        <button onclick="refreshConnections()" class="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded text-sm">
-                            Обновить
+                        <h4 class="text-lg font-medium">🎧 Прослушивание комната: 
+                            <span id="currentRoomId" class="font-mono bg-blue-900 px-2 py-1 rounded"></span>
+                        </h4>
+                        <button onclick="stopMonitoring()"
+                            class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded text-sm">
+                            ⏹️ Остановить
                         </button>
                     </div>
                     
-                    <div class="overflow-x-auto">
-                        <table class="w-full" id="connectionsTable">
-                            <thead>
-                                <tr class="border-b border-gray-700">
-                                    <th class="text-left py-2">ID пользователя</th>
-                                    <th class="text-left py-2">Статус</th>
-                                    <th class="text-left py-2">Комната</th>
-                                    <th class="text-left py-2">Время подключения</th>
-                                    <th class="text-left py-2">Действия</th>
-                                </tr>
-                            </thead>
-                            <tbody id="connectionsBody">
-                                <!-- Данные будут заполнены через JavaScript -->
-                                <tr>
-                                    <td colspan="5" class="py-4 text-center text-gray-400">
-                                        Нет активных подключений
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <div class="flex items-center space-x-3 mb-4">
+                                <div class="w-3 h-3 bg-red-500 rounded-full" id="audioIndicator"></div>
+                                <span class="text-sm" id="monitorStatus">Подключение...</span>
+                                <div class="audio-wave" id="audioWave">
+                                    <!-- Wave bars will be generated here -->
+                                </div>
+                            </div>
+                            
+                            <div class="bg-gray-800 p-4 rounded">
+                                <h5 class="font-medium mb-2">📊 Активность</h5>
+                                <div id="activityStats">
+                                    <div>Получено аудио: <span id="audioChunksCount">0</span></div>
+                                    <div>Последнее: <span id="lastAudioTime">-</span></div>
+                                    <div>Буфер сервера: <span id="serverBufferSize">0</span> чанков</div>
+                                </div>
+                            </div>
+
+                            <!-- Controls for audio playback -->
+                            <div class="mt-4 bg-gray-800 p-4 rounded">
+                                <h5 class="font-medium mb-3">🎵 Управление аудио</h5>
+                                <div class="flex gap-2">
+                                    <button onclick="toggleAudioPlayback()" id="playPauseBtn" 
+                                        class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded">
+                                        ▶️ Воспроизвести
+                                    </button>
+                                    <button onclick="downloadAudio()" 
+                                        class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded">
+                                        💾 Скачать
+                                    </button>
+                                    <button onclick="clearAudioBuffer()" 
+                                        class="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded">
+                                        🗑️ Очистить
+                                    </button>
+                                    <button onclick="updateServerBufferSize()" 
+                                        class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded">
+                                        🔄 Обновить
+                                    </button>
+                                </div>
+                                <div class="mt-2 text-xs text-gray-400">
+                                    Локальный буфер: <span id="audioBufferSize">0</span> записей
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h5 class="font-medium mb-2">👥 Участники комнаты</h5>
+                            <div id="participantsList" class="space-y-2">
+                                <!-- Участники будут здесь -->
+                            </div>
+                        </div>
                     </div>
+
+                    <!-- Аудиоплееры для каждого участника -->
+                    <div class="mt-6">
+                        <h5 class="font-medium mb-3">🎵 Аудиопотоки участников</h5>
+                        <div id="audioPlayers" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Аудиоплееры будут создаваться динамически -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Активные подключения -->
+            <div class="bg-gray-800 p-6 rounded-lg">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold">🔗 Активные подключения</h2>
+                    <button onclick="refreshConnections()" class="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded text-sm">
+                        Обновить
+                    </button>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full" id="connectionsTable">
+                        <thead>
+                            <tr class="border-b border-gray-700">
+                                <th class="text-left py-2">ID пользователя</th>
+                                <th class="text-left py-2">Статус</th>
+                                <th class="text-left py-2">Комната</th>
+                                <th class="text-left py-2">Время подключения</th>
+                                <th class="text-left py-2">Последняя активность</th>
+                                <th class="text-left py-2">Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody id="connectionsBody">
+                            <!-- Данные будут заполнены через JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно предпросмотра заглушки -->
+    <div id="previewModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 hidden">
+        <div class="bg-gray-800 rounded-lg w-11/12 md:w-3/4 lg:w-1/2 max-h-screen overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-semibold">Предпросмотр заглушки</h3>
+                    <button onclick="closePreview()" class="text-gray-400 hover:text-white">
+                        ✕
+                    </button>
+                </div>
+                <div id="previewContent" class="bg-gray-900 p-4 rounded">
+                    <!-- Содержимое предпросмотра будет сгенерировано динамически -->
+                </div>
+                <div class="mt-4 flex justify-end">
+                    <button onclick="closePreview()" class="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded">
+                        Закрыть
+                    </button>
                 </div>
             </div>
         </div>
@@ -278,7 +368,7 @@
     <script>
         // Автоматическое определение базового URL
         const getBaseUrl = () => {
-            return window.location.origin; // Используем текущий origin
+            return window.location.origin;
         };
 
         const BACKEND_URL = getBaseUrl();
@@ -293,6 +383,7 @@
         let waveBars = [];
         let audioChunks = [];
         let audioPlayers = {};
+        let maintenanceMode = false;
 
         console.log('Using backend URL:', BACKEND_URL);
 
@@ -311,221 +402,47 @@
             };
         }
 
-        // Функция для обновления размера серверного буфера
-        async function updateServerBufferSize() {
-            if (!currentMonitoredRoom) return;
-            
-            try {
-                const response = await fetch(`${BACKEND_URL}/admin/audio/buffer/${currentMonitoredRoom}`, {
-                    headers: getAuthHeaders(),
-                    credentials: 'include'
-                });
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    document.getElementById('serverBufferSize').textContent = data.buffer_size;
-                }
-            } catch (error) {
-                console.error('Error fetching server buffer size:', error);
-            }
-        }
-
-        // Функция для получения аудио буфера с сервера
-        async function getServerAudioBuffer() {
-            if (!currentMonitoredRoom) return [];
-            
-            try {
-                const response = await fetch(`${BACKEND_URL}/admin/audio/buffer/${currentMonitoredRoom}`, {
-                    headers: getAuthHeaders(),
-                    credentials: 'include'
-                });
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    return data.buffer || [];
-                }
-            } catch (error) {
-                console.error('Error fetching audio buffer:', error);
-            }
-            return [];
-        }
-
-        // Функция для очистки серверного аудио буфера
-        async function clearServerAudioBuffer() {
-            if (!currentMonitoredRoom) return;
-            
-            try {
-                const response = await fetch(`${BACKEND_URL}/admin/audio/record/clear/${currentMonitoredRoom}`, {
-                    method: 'POST',
-                    headers: getAuthHeaders(),
-                    credentials: 'include'
-                });
-                
-                if (response.ok) {
-                    console.log('Server audio buffer cleared');
-                    updateServerBufferSize();
-                }
-            } catch (error) {
-                console.error('Error clearing server audio buffer:', error);
-            }
-        }
-
-        // Функция для начала записи аудио на сервере
-        async function startServerAudioRecording() {
-            if (!currentMonitoredRoom) return;
-            
-            try {
-                const response = await fetch(`${BACKEND_URL}/admin/audio/record/start`, {
-                    method: 'POST',
-                    headers: getAuthHeaders(),
-                    credentials: 'include',
-                    body: JSON.stringify({ 
-                        room_id: currentMonitoredRoom,
-                        duration: 60 
-                    })
-                });
-                
-                if (response.ok) {
-                    console.log('Server audio recording started');
-                }
-            } catch (error) {
-                console.error('Error starting server audio recording:', error);
-            }
-        }
-
-        // Функция для скачивания аудио записи с сервера
-        async function downloadServerAudio() {
-            if (!currentMonitoredRoom) {
-                alert('Сначала выберите комнату для мониторинга');
-                return;
-            }
-            
-            try {
-                const response = await fetch(`${BACKEND_URL}/admin/audio/record/${currentMonitoredRoom}`, {
-                    headers: getAuthHeaders(),
-                    credentials: 'include'
-                });
-                
-                if (response.ok) {
-                    const blob = await response.blob();
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `recording_${currentMonitoredRoom}_${new Date().toISOString().replace(/[:.]/g, '-')}.wav`;
-                    document.body.appendChild(a);
-                    a.click();
-                    window.URL.revokeObjectURL(url);
-                    document.body.removeChild(a);
-                } else {
-                    alert('Запись не найдена или произошла ошибка');
-                }
-            } catch (error) {
-                console.error('Error downloading audio recording:', error);
-                alert('Ошибка при скачивании записи');
-            }
-        }
-
-        // Инициализация AudioContext
-        function initAudioContext() {
-            if (!audioContext) {
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            }
-        }
-
-        // Создание визуализатора волны
-        function createWaveVisualizer() {
-            const waveContainer = document.getElementById('audioWave');
-            waveContainer.innerHTML = '';
-            waveBars = [];
-            
-            // Создаем 32 бара для визуализации
-            for (let i = 0; i < 32; i++) {
-                const bar = document.createElement('div');
-                bar.className = 'audio-wave-bar';
-                bar.style.height = '2px';
-                waveContainer.appendChild(bar);
-                waveBars.push(bar);
-            }
-        }
-
-        // Обновление визуализатора волны на основе уровня громкости
-        function updateWaveVisualizer(volumeLevel) {
-            if (!waveBars.length) return;
-            
-            const height = Math.max(2, volumeLevel * 40);
-            
-            waveBars.forEach((bar, index) => {
-                const waveHeight = Math.max(2, height * (0.5 + 0.5 * Math.sin(Date.now() / 200 + index * 0.3)));
-                bar.style.height = `${waveHeight}px`;
-                
-                const intensity = Math.min(255, Math.floor(volumeLevel * 255));
-                bar.style.background = `rgb(${intensity}, 180, 90)`;
-            });
-        }
-
-        // Воспроизведение аудио чанка
-        async function playAudioChunk(audioChunkBase64, volumeLevel) {
-            if (!audioContext) initAudioContext();
-            
-            try {
-                const audioData = Uint8Array.from(atob(audioChunkBase64), c => c.charCodeAt(0));
-                const audioBuffer = await audioContext.decodeAudioData(audioData.buffer);
-                
-                const source = audioContext.createBufferSource();
-                source.buffer = audioBuffer;
-                
-                const gainNode = audioContext.createGain();
-                gainNode.gain.value = volumeLevel || 0.5;
-                
-                source.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-                
-                source.start();
-                
-                updateWaveVisualizer(volumeLevel || 0.5);
-                
-                return source;
-                
-            } catch (error) {
-                console.error('Error playing audio chunk:', error);
-            }
-        }
-
         // Обработка логина
-        async function handleLogin(event) {
-            event.preventDefault();
-            
+        async function handleLogin() {
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             
+            // Скрываем предыдущие ошибки
+            document.getElementById('loginError').classList.add('hidden');
+            document.getElementById('rateLimitError').classList.add('hidden');
+            
+            // Кодируем в base64 для Basic Auth
             authToken = btoa(`${username}:${password}`);
             
+            console.log('Trying to login with:', { username, authToken });
+            
             try {
+                // Проверяем авторизацию через health endpoint
                 const response = await fetch(`${BACKEND_URL}/admin/health`, {
                     headers: getAuthHeaders(),
                     credentials: 'include'
                 });
                 
+                console.log('Login response status:', response.status, response.statusText);
+                
                 if (response.ok) {
+                    // Успешная авторизация
                     document.getElementById('loginForm').classList.add('hidden');
                     document.getElementById('adminPanel').classList.remove('hidden');
                     localStorage.setItem('adminAuth', authToken);
                     refreshData();
+                    checkMaintenanceStatus();
+                } else if (response.status === 429) {
+                    document.getElementById('rateLimitError').classList.remove('hidden');
                 } else {
-                    showLoginError();
+                    document.getElementById('loginError').classList.remove('hidden');
                 }
             } catch (error) {
                 console.error('Login error:', error);
-                showLoginError();
+                document.getElementById('loginError').classList.remove('hidden');
             }
             
             return false;
-        }
-
-        // Показать ошибку авторизации
-        function showLoginError() {
-            document.getElementById('loginError').classList.remove('hidden');
-            authToken = '';
         }
 
         // Выход из системы
@@ -537,6 +454,7 @@
             document.getElementById('username').value = '';
             document.getElementById('password').value = '';
             document.getElementById('loginError').classList.add('hidden');
+            document.getElementById('rateLimitError').classList.add('hidden');
             
             if (refreshInterval) {
                 clearInterval(refreshInterval);
@@ -549,16 +467,23 @@
             const savedAuth = localStorage.getItem('adminAuth');
             if (savedAuth) {
                 authToken = savedAuth;
+                console.log('Found saved auth token');
                 
+                // Проверяем валидность токена
                 fetch(`${BACKEND_URL}/admin/health`, {
                     headers: getAuthHeaders(),
                     credentials: 'include'
                 })
                 .then(response => {
+                    console.log('Saved auth check status:', response.status);
                     if (response.ok) {
                         document.getElementById('loginForm').classList.add('hidden');
                         document.getElementById('adminPanel').classList.remove('hidden');
                         refreshData();
+                        checkMaintenanceStatus();
+                    } else if (response.status === 429) {
+                        document.getElementById('rateLimitError').classList.remove('hidden');
+                        localStorage.removeItem('adminAuth');
                     } else {
                         localStorage.removeItem('adminAuth');
                     }
@@ -567,6 +492,8 @@
                     console.error('Saved auth check error:', error);
                     localStorage.removeItem('adminAuth');
                 });
+            } else {
+                console.log('No saved auth token found');
             }
         }
 
@@ -577,10 +504,11 @@
                     headers: getAuthHeaders(),
                     credentials: 'include'
                 });
+                
                 if (response.ok) {
                     const data = await response.json();
                     updateStats(data);
-                } else if (response.status === 401) {
+                } else if (response.status === 401 || response.status === 429) {
                     logout();
                 }
             } catch (error) {
@@ -594,10 +522,11 @@
                     headers: getAuthHeaders(),
                     credentials: 'include'
                 });
+                
                 if (response.ok) {
                     const data = await response.json();
                     updateConnections(data);
-                } else if (response.status === 401) {
+                } else if (response.status === 401 || response.status === 429) {
                     logout();
                 }
             } catch (error) {
@@ -621,76 +550,116 @@
             }
         }
 
-        // Управление аудио воспроизведением
-        function toggleAudioPlayback() {
-            if (isPlaying) {
-                stopAudioPlayback();
-            } else {
-                startAudioPlayback();
-            }
-        }
-
-        function startAudioPlayback() {
-            if (audioChunks.length === 0) {
-                alert('Нет аудиоданных для воспроизведения');
-                return;
-            }
-            
-            isPlaying = true;
-            document.getElementById('playPauseBtn').textContent = '⏸️ Пауза';
-            
-            playAudioSequence();
-        }
-
-        function stopAudioPlayback() {
-            isPlaying = false;
-            document.getElementById('playPauseBtn').textContent = '▶️ Воспроизвести';
-            
-            Object.values(audioNodes).forEach(node => {
-                try {
-                    node.stop();
-                } catch (e) {}
-            });
-            audioNodes = {};
-        }
-
-        async function playAudioSequence() {
-            if (!isPlaying) return;
-            
-            for (const chunk of audioChunks) {
-                if (!isPlaying) break;
+        // Функции для работы с заглушкой
+        async function checkMaintenanceStatus() {
+            try {
+                const response = await fetch(`${BACKEND_URL}/admin/maintenance/status`, {
+                    headers: getAuthHeaders(),
+                    credentials: 'include'
+                });
                 
-                try {
-                    const source = await playAudioChunk(chunk.audio_chunk, chunk.volume_level);
-                    if (source) {
-                        audioNodes[Date.now()] = source;
-                    }
-                    
-                    await new Promise(resolve => setTimeout(resolve, 100));
-                    
-                } catch (error) {
-                    console.error('Error playing audio sequence:', error);
+                if (response.ok) {
+                    const data = await response.json();
+                    maintenanceMode = data.enabled;
+                    updateMaintenanceButton();
                 }
-            }
-            
-            if (isPlaying) {
-                playAudioSequence();
+            } catch (error) {
+                console.error('Error checking maintenance status:', error);
             }
         }
 
-        function downloadAudio() {
-            if (audioChunks.length === 0) {
-                alert('Нет аудиоданных для скачивания');
-                return;
+        function updateMaintenanceButton() {
+            const button = document.querySelector('button[onclick="toggleMaintenance()"]');
+            if (maintenanceMode) {
+                button.classList.remove('bg-yellow-600');
+                button.classList.add('bg-green-600');
+                button.textContent = 'Заглушка (активна)';
+            } else {
+                button.classList.remove('bg-green-600');
+                button.classList.add('bg-yellow-600');
+                button.textContent = 'Заглушка';
             }
-            
-            alert('Функция скачивания аудио будет реализована в следующей версии');
         }
 
-        function clearAudioBuffer() {
-            audioChunks = [];
-            document.getElementById('audioBufferSize').textContent = '0';
-            stopAudioPlayback();
+        function toggleMaintenance() {
+            document.getElementById('maintenanceModal').classList.remove('hidden');
+            document.getElementById('maintenanceStatus').classList.add('hidden');
+        }
+
+        async function toggleMaintenanceMode() {
+            const isEnabled = document.getElementById('maintenanceToggle').checked;
+            
+            try {
+                const response = await fetch(`${BACKEND_URL}/admin/maintenance`, {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    credentials: 'include',
+                    body: JSON.stringify({ 
+                        enabled: isEnabled,
+                        url: document.getElementById('maintenanceMessage').value
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    maintenanceMode = isEnabled;
+                    updateMaintenanceButton();
+                    alert(isEnabled ? 'Режим технических работ включен' : 'Режим технических работ выключен');
+                } else {
+                    document.getElementById('maintenanceToggle').checked = !isEnabled;
+                    alert('Ошибка при изменении режима технических работ');
+                }
+            } catch (error) {
+                console.error('Error toggling maintenance mode:', error);
+                document.getElementById('maintenanceToggle').checked = !isEnabled;
+                alert('Ошибка при изменении режима технических работ');
+            }
+        }
+
+        async function updateMaintenanceSettings() {
+            const message = document.getElementById('maintenanceMessage').value;
+            
+            try {
+                const response = await fetch(`${BACKEND_URL}/admin/maintenance/message`, {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    credentials: 'include',
+                    body: JSON.stringify({ message })
+                });
+                
+                if (response.ok) {
+                    alert('Настройки заглушки сохранены');
+                } else {
+                    alert('Ошибка при сохранении настроек заглушки');
+                }
+            } catch (error) {
+                console.error('Error updating maintenance settings:', error);
+                alert('Ошибка при сохранении настроек заглушки');
+            }
+        }
+
+        function previewMaintenance() {
+            const message = document.getElementById('maintenanceMessage').value;
+            
+            const previewHtml = `
+                <div class="min-h-screen bg-gray-900 text-white flex items-center justify-center">
+                    <div class="bg-gray-800 p-8 rounded-xl shadow-2xl w-96 text-center">
+                        <div class="text-4xl mb-4">🔧</div>
+                        <h1 class="text-2xl font-bold mb-4">ВЕДУТСЯ ТЕХНИЧЕСКИЕ РАБОТЫ</h1>
+                        <p class="text-gray-300 mb-6">${message}</p>
+                        <div class="w-full bg-gray-700 rounded-full h-2 mb-6">
+                            <div class="bg-blue-600 h-2 rounded-full animate-pulse" style="width: 45%"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('previewContent').innerHTML = previewHtml;
+            document.getElementById('previewModal').classList.remove('hidden');
+        }
+
+        function closePreview() {
+            document.getElementById('previewModal').classList.add('hidden');
         }
 
         // Мониторинг комнат
@@ -712,6 +681,8 @@
                 if (response.ok) {
                     currentMonitoredRoom = roomId;
                     setupMonitorWebSocket(roomId);
+                } else if (response.status === 429) {
+                    alert('Слишком много запросов. Попробуйте позже.');
                 } else {
                     alert('Комната не найдена или ошибка доступа');
                 }
@@ -723,18 +694,13 @@
 
         function setupMonitorWebSocket(roomId) {
             try {
-                const wsUrl = `${BACKEND_URL.replace('http', 'ws')}/ws/monitor/${roomId}`;
+                const wsUrl = BACKEND_URL.replace('http', 'ws') + '/ws/monitor/' + roomId;
                 monitorWebSocket = new WebSocket(wsUrl);
                 
                 monitorWebSocket.onopen = function() {
                     console.log('Monitor WebSocket connected');
                     document.getElementById('monitorStatus').textContent = 'Подключено к комнате';
                     document.getElementById('audioIndicator').className = 'w-3 h-3 bg-green-500 rounded-full animate-ping';
-                    
-                    initAudioContext();
-                    createWaveVisualizer();
-                    startServerAudioRecording();
-                    updateServerBufferSize();
                 };
 
                 monitorWebSocket.onmessage = function(event) {
@@ -753,9 +719,10 @@
                     stopMonitoring();
                 };
 
+                // Показываем панель мониторинга
                 document.getElementById('audioMonitor').classList.remove('hidden');
                 document.getElementById('currentRoomId').textContent = roomId;
-
+                
             } catch (error) {
                 console.error('Error setting up monitor:', error);
                 alert('Ошибка подключения к мониторингу');
@@ -769,19 +736,9 @@
                     break;
                 case 'monitor_started':
                     updateParticipantsList(data.participants || []);
-                    createAudioPlayers(data.participants || []);
                     break;
                 case 'room_status':
                     updateParticipantsList(data.participants || []);
-                    createAudioPlayers(data.participants || []);
-                    break;
-                case 'participant_joined':
-                    addParticipant(data.user_id);
-                    createAudioPlayer(data.user_id);
-                    break;
-                case 'participant_left':
-                    removeParticipant(data.user_id);
-                    removeAudioPlayer(data.user_id);
                     break;
             }
         }
@@ -791,116 +748,13 @@
             document.getElementById('audioChunksCount').textContent = audioChunksCount;
             document.getElementById('lastAudioTime').textContent = new Date().toLocaleTimeString();
             
-            audioChunks.push(data);
-            document.getElementById('audioBufferSize').textContent = audioChunks.length;
-            
-            if (audioChunks.length > 100) {
-                audioChunks.shift();
-            }
-            
-            // Обновляем размер серверного буфера
-            updateServerBufferSize();
-            
+            // Анимация индикатора
             const indicator = document.getElementById('audioIndicator');
             indicator.className = 'w-3 h-3 bg-green-500 rounded-full animate-ping';
             
-            setTimeout(() => {
+            setTimeout(function() {
                 indicator.className = 'w-3 h-3 bg-green-500 rounded-full';
             }, 300);
-            
-            if (data.audio_chunk && data.volume_level) {
-                playAudioChunk(data.audio_chunk, data.volume_level);
-            }
-            
-            if (data.user_id) {
-                if (!audioPlayers[data.user_id]) {
-                    audioPlayers[data.user_id] = { count: 0 };
-                }
-                audioPlayers[data.user_id].count++;
-                
-                const countElement = document.getElementById(`audio-count-${data.user_id}`);
-                if (countElement) {
-                    countElement.textContent = audioPlayers[data.user_id].count;
-                }
-                
-                updateAudioLevel(data.user_id, data.volume_level);
-                
-                const participantElement = document.getElementById(`participant-${data.user_id}`);
-                if (participantElement) {
-                    participantElement.classList.add('participant-active');
-                    setTimeout(() => {
-                        participantElement.classList.remove('participant-active');
-                    }, 1000);
-                }
-            }
-        }
-
-        function updateAudioLevel(userId, volumeLevel = null) {
-            const meter = document.getElementById(`audio-meter-${userId}`);
-            const indicator = document.getElementById(`audio-indicator-${userId}`);
-            
-            if (meter && indicator) {
-                const audioLevel = volumeLevel !== null ? Math.min(100, volumeLevel * 100) : 0;
-                
-                meter.style.width = `${audioLevel}%`;
-                
-                indicator.className = 'w-3 h-3 bg-green-500 rounded-full animate-ping';
-                setTimeout(() => {
-                    if (audioLevel > 0) {
-                        indicator.className = 'w-3 h-3 bg-green-500 rounded-full';
-                    } else {
-                        indicator.className = 'w-3 h-3 bg-gray-500 rounded-full';
-                    }
-                }, 300);
-            }
-        }
-
-        function createAudioPlayers(participants) {
-            const container = document.getElementById('audioPlayers');
-            container.innerHTML = '';
-            
-            participants.forEach(participant => {
-                createAudioPlayer(participant.user_id || participant);
-            });
-        }
-
-        function createAudioPlayer(userId) {
-            const container = document.getElementById('audioPlayers');
-            
-            const playerElement = document.createElement('div');
-            playerElement.id = `audio-player-${userId}`;
-            playerElement.className = 'bg-gray-800 p-4 rounded-lg';
-            playerElement.innerHTML = `
-                <div class="flex items-center justify-between mb-2">
-                    <div class="font-medium">👤 ${userId}</div>
-                    <div class="w-3 h-3 bg-gray-500 rounded-full" id="audio-indicator-${userId}"></div>
-                </div>
-                <div class="flex items-center space-x-2 mb-2">
-                    <span class="text-xs text-gray-400">Уровень:</span>
-                    <div class="flex-1 bg-gray-700 rounded-full h-2">
-                        <div class="bg-green-500 h-2 rounded-full transition-all duration-100" 
-                             style="width: 0%" 
-                             id="audio-meter-${userId}"></div>
-                    </div>
-                </div>
-                <div class="text-xs text-gray-400">
-                    Получено chunks: <span id="audio-count-${userId}">0</span>
-                </div>
-            `;
-            
-            container.appendChild(playerElement);
-            
-            if (!audioPlayers[userId]) {
-                audioPlayers[userId] = { count: 0 };
-            }
-        }
-
-        function removeAudioPlayer(userId) {
-            const playerElement = document.getElementById(`audio-player-${userId}`);
-            if (playerElement) {
-                playerElement.remove();
-            }
-            delete audioPlayers[userId];
         }
 
         function updateParticipantsList(participants) {
@@ -910,36 +764,15 @@
             participants.forEach(participant => {
                 const userId = participant.user_id || participant;
                 const participantElement = document.createElement('div');
-                participantElement.id = `participant-${userId}`;
+                participantElement.id = 'participant-' + userId;
                 participantElement.className = 'bg-gray-700 p-2 rounded text-sm';
-                participantElement.innerHTML = `
-                    <div class="font-medium">👤 ${userId}</div>
-                    <div class="text-xs text-gray-400">Статус: connected</div>
-                `;
+                
+                let participantHtml = '<div class="font-medium">👤 ' + userId + '</div>';
+                participantHtml += '<div class="text-xs text-gray-400">Статус: connected</div>';
+                
+                participantElement.innerHTML = participantHtml;
                 container.appendChild(participantElement);
             });
-        }
-
-        function addParticipant(userId) {
-            const container = document.getElementById('participantsList');
-            const participantElement = document.createElement('div');
-            participantElement.id = `participant-${userId}`;
-            participantElement.className = 'bg-gray-700 p-2 rounded text-sm';
-            participantElement.innerHTML = `
-                <div class="font-medium">👤 ${userId}</div>
-                <div class="text-xs text-gray-400">Статус: connected</div>
-            `;
-            container.appendChild(participantElement);
-            
-            createAudioPlayer(userId);
-        }
-
-        function removeParticipant(userId) {
-            const element = document.getElementById(`participant-${userId}`);
-            if (element) {
-                element.remove();
-            }
-            removeAudioPlayer(userId);
         }
 
         async function stopMonitoring() {
@@ -966,13 +799,6 @@
             document.getElementById('audioMonitor').classList.add('hidden');
             document.getElementById('monitorRoomId').value = '';
             audioChunksCount = 0;
-            
-            stopAudioPlayback();
-            clearAudioBuffer();
-            
-            const audioPlayersContainer = document.getElementById('audioPlayers');
-            audioPlayersContainer.innerHTML = '';
-            audioPlayers = {};
         }
 
         function updateMonitorsList(monitors) {
@@ -983,16 +809,23 @@
                 return;
             }
             
-            container.innerHTML = monitors.map(monitor => `
-                <div class="mb-2 p-2 bg-gray-700 rounded">
-                    <div class="font-medium">Комната: ${monitor.room_id}</div>
-                    <div class="text-xs">Участников: ${monitor.participants?.length || 0}</div>
-                    <div class="text-xs">Мониторов: ${monitor.monitors_count}</div>
-                </div>
-            `).join('');
+            let html = '';
+            for (let i = 0; i < monitors.length; i++) {
+                const monitor = monitors[i];
+                html += '<div class="mb-2 p-2 bg-gray-700 rounded">';
+                html += '<div class="font-medium">Комната: ' + monitor.room_id + '</div>';
+                html += '<div class="text-xs">Участников: ' + (monitor.participants ? monitor.participants.length : 0) + '</div>';
+                html += '<div class="text-xs">Мониторов: ' + monitor.monitors_count + '</div>';
+                html += '</div>';
+            }
+            container.innerHTML = html;
         }
 
         async function forceDisconnect(userId) {
+            if (!confirm('Вы уверены, что хотите отключить пользователя ' + userId + '?')) {
+                return;
+            }
+
             try {
                 const response = await fetch(`${BACKEND_URL}/admin/disconnect`, {
                     method: 'POST',
@@ -1004,6 +837,8 @@
                 if (response.ok) {
                     alert('Пользователь отключен');
                     fetchConnections();
+                } else if (response.status === 429) {
+                    alert('Слишком много запросов. Попробуйте позже.');
                 }
             } catch (error) {
                 console.error('Error disconnecting user:', error);
@@ -1025,12 +860,14 @@
                     method: 'POST',
                     headers: getAuthHeaders(),
                     credentials: 'include',
-                    body: JSON.stringify({ message })
+                    body: JSON.stringify({ message: message })
                 });
                 
                 if (response.ok) {
                     alert('Сообщение отправлено');
                     messageInput.value = '';
+                } else if (response.status === 429) {
+                    alert('Слишком много запросов. Попробуйте позже.');
                 }
             } catch (error) {
                 console.error('Error sending message:', error);
@@ -1050,10 +887,11 @@
                     if (response.ok) {
                         alert('Система остановлена');
                         refreshData();
+                    } else if (response.status === 429) {
+                        alert('Слишком много запросов. Попробуйте позже.');
                     }
                 } catch (error) {
                     console.error('Error emergency stop:', error);
-                    alert('Ошибка экстренной остановки');
                 }
             }
         }
@@ -1071,17 +909,12 @@
             tbody.innerHTML = '';
 
             if (!connections || connections.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="5" class="py-4 text-center text-gray-400">
-                            Нет активных подключений
-                        </td>
-                    </tr>
-                `;
+                tbody.innerHTML = '<tr><td colspan="6" class="py-4 text-center text-gray-400">Нет активных подключений</td></tr>';
                 return;
             }
 
-            connections.forEach(conn => {
+            for (let i = 0; i < connections.length; i++) {
+                const conn = connections[i];
                 const row = document.createElement('tr');
                 row.className = 'border-b border-gray-700 hover:bg-gray-750';
                 
@@ -1089,41 +922,29 @@
                                   conn.status === 'searching' ? 'bg-yellow-600' : 'bg-gray-600';
                 
                 const connectedAt = conn.connected_at ? new Date(conn.connected_at).toLocaleTimeString() : '-';
+                const lastActivity = conn.last_activity ? new Date(conn.last_activity).toLocaleTimeString() : '-';
                 
-                row.innerHTML = `
-                    <td class="py-3 font-mono text-sm">${conn.user_id}</td>
-                    <td class="py-3">
-                        <span class="px-2 py-1 rounded text-xs ${statusClass}">
-                            ${conn.status}
-                        </span>
-                    </td>
-                    <td class="py-3 font-mono text-sm">${conn.room_id || '-'}</td>
-                    <td class="py-3 text-sm">${connectedAt}</td>
-                    <td class="py-3">
-                        <button onclick="forceDisconnect('${conn.user_id}')"
-                            class="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-sm mr-2">
-                            Отключить
-                        </button>
-                        ${conn.room_id ? `
-                        <button onclick="document.getElementById('monitorRoomId').value='${conn.room_id}'; updateServerBufferSize()"
-                            class="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-sm">
-                            Слушать
-                        </button>
-                        ` : ''}
-                    </td>
-                `;
+                let rowHtml = '<td class="py-3 font-mono text-sm">' + conn.user_id + '</td>';
+                rowHtml += '<td class="py-3"><span class="px-2 py-1 rounded text-xs ' + statusClass + '">' + conn.status + '</span></td>';
+                rowHtml += '<td class="py-3 font-mono text-sm">' + (conn.room_id || '-') + '</td>';
+                rowHtml += '<td class="py-3 text-sm">' + connectedAt + '</td>';
+                rowHtml += '<td class="py-3 text-sm">' + lastActivity + '</td>';
+                rowHtml += '<td class="py-3">';
+                rowHtml += '<button onclick="forceDisconnect(\'' + conn.user_id + '\')" class="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-sm mr-2">Отключить</button>';
                 
+                if (conn.room_id) {
+                    rowHtml += '<button onclick="document.getElementById(\'monitorRoomId\').value=\'' + conn.room_id + '\'" class="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-sm">Слушать</button>';
+                }
+                
+                rowHtml += '</td>';
+                
+                row.innerHTML = rowHtml;
                 tbody.appendChild(row);
-            });
+            }
         }
 
         async function refreshData() {
-            await Promise.all([
-                fetchStats(), 
-                fetchConnections(), 
-                refreshMonitors(),
-                updateServerBufferSize()
-            ]);
+            await Promise.all([fetchStats(), fetchConnections(), refreshMonitors()]);
         }
 
         function refreshConnections() {
@@ -1135,8 +956,8 @@
             console.log('Admin panel loaded, backend URL:', BACKEND_URL);
             checkSavedAuth();
             
-            // Обновление данных каждые 3 секунды
-            refreshInterval = setInterval(refreshData, 3000);
+            // Обновление данных каждые 5 секунд
+            refreshInterval = setInterval(refreshData, 5000);
         });
 
         window.addEventListener('beforeunload', function() {
@@ -1156,12 +977,10 @@
         window.logout = logout;
         window.startMonitoring = startMonitoring;
         window.stopMonitoring = stopMonitoring;
-        window.toggleAudioPlayback = toggleAudioPlayback;
-        window.downloadAudio = downloadAudio;
-        window.clearAudioBuffer = clearAudioBuffer;
-        window.updateServerBufferSize = updateServerBufferSize;
-        window.downloadServerAudio = downloadServerAudio;
-        window.clearServerAudioBuffer = clearServerAudioBuffer;
+        window.toggleMaintenanceMode = toggleMaintenanceMode;
+        window.updateMaintenanceSettings = updateMaintenanceSettings;
+        window.previewMaintenance = previewMaintenance;
+        window.closePreview = closePreview;
     </script>
 </body>
 </html>
