@@ -64,6 +64,9 @@
                 <div id="loginError" class="text-red-400 text-sm mt-3 hidden">
                     Неверный логин или пароль
                 </div>
+                <div id="rateLimitError" class="text-red-400 text-sm mt-3 hidden">
+                    Слишком много попыток. Попробуйте через 5 минут.
+                </div>
             </form>
         </div>
     </div>
@@ -74,9 +77,50 @@
             <div class="max-w-7xl mx-auto">
                 <div class="flex justify-between items-center mb-8">
                     <h1 class="text-3xl font-bold">Панель управления голосовым чатом</h1>
-                    <button onclick="logout()" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded">
-                        Выйти
-                    </button>
+                    <div class="flex gap-2">
+                        <button id="maintenanceBtn" onclick="toggleMaintenanceMode()" 
+                            class="bg-yellow-600 hover:bg-yellow-700 px-4 py-2 rounded">
+                            🚧 Заглушка
+                        </button>
+                        <button onclick="logout()" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded">
+                            Выйти
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Режим заглушки -->
+                <div id="maintenancePanel" class="bg-yellow-800 p-6 rounded-lg mb-8 hidden">
+                    <h2 class="text-xl font-semibold mb-4">🚧 Режим технических работ</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h3 class="text-lg font-medium mb-3">Сообщение для пользователей</h3>
+                            <textarea id="maintenanceMessage" 
+                                class="w-full bg-yellow-700 border border-yellow-600 rounded px-3 py-2 focus:outline-none focus:border-yellow-500 h-24"
+                                placeholder="Введите сообщение о технических работах...">Ведутся технические работы. Приносим извинения за временные неудобства.</textarea>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-lg font-medium mb-3">Действия</h3>
+                            <div class="space-y-2">
+                                <button onclick="updateMaintenanceMessage()" 
+                                    class="w-full bg-yellow-600 hover:bg-yellow-700 px-4 py-2 rounded">
+                                    💾 Сохранить сообщение
+                                </button>
+                                <button onclick="disableMaintenanceMode()" 
+                                    class="w-full bg-green-600 hover:bg-green-700 px-4 py-2 rounded">
+                                    ✅ Выключить заглушку
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 p-4 bg-yellow-900 rounded">
+                        <h4 class="font-medium mb-2">📊 Статус заглушки</h4>
+                        <div id="maintenanceStatus">
+                            <span class="text-green-400">Выключена</span> - сайт доступен для пользователей
+                        </div>
+                    </div>
                 </div>
                 
                 <!-- Статистика -->
@@ -135,7 +179,7 @@
                     <!-- Панель прослушивания -->
                     <div id="audioMonitor" class="hidden bg-gray-900 p-6 rounded-lg border border-blue-500">
                         <div class="flex justify-between items-center mb-4">
-                            <h4 class="text-lg font-medium">🎧 Прослушивание комнаты: 
+                            <h4 class="text-lg font-medium">🎧 Прослушивание комната: 
                                 <span id="currentRoomId" class="font-mono bg-blue-900 px-2 py-1 rounded"></span>
                             </h4>
                             <button onclick="stopMonitoring()"
@@ -159,6 +203,7 @@
                                     <div id="activityStats">
                                         <div>Получено аудио: <span id="audioChunksCount">0</span></div>
                                         <div>Последнее: <span id="lastAudioTime">-</span></div>
+                                        <div>Буфер сервера: <span id="serverBufferSize">0</span> чанков</div>
                                     </div>
                                 </div>
 
@@ -178,9 +223,13 @@
                                             class="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded">
                                             🗑️ Очистить
                                         </button>
+                                        <button onclick="updateServerBufferSize()" 
+                                            class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded">
+                                            🔄 Обновить
+                                        </button>
                                     </div>
                                     <div class="mt-2 text-xs text-gray-400">
-                                        Буфер: <span id="audioBufferSize">0</span> записей
+                                        Локальный буфер: <span id="audioBufferSize">0</span> записей
                                     </div>
                                 </div>
                             </div>
@@ -249,6 +298,7 @@
                             <thead>
                                 <tr class="border-b border-gray-700">
                                     <th class="text-left py-2">ID пользователя</th>
+                                    <th class="text-left py-2">IP адрес</th>
                                     <th class="text-left py-2">Статус</th>
                                     <th class="text-left py-2">Комната</th>
                                     <th class="text-left py-2">Время подключения</th>
@@ -257,6 +307,11 @@
                             </thead>
                             <tbody id="connectionsBody">
                                 <!-- Данные будут заполнены через JavaScript -->
+                                <tr>
+                                    <td colspan="6" class="py-4 text-center text-gray-400">
+                                        Нет активных подключений
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -278,90 +333,14 @@
         let currentMonitoredRoom = null;
         let audioChunksCount = 0;
         let audioContext = null;
-        let audioBuffer = [];
         let isPlaying = false;
         let audioNodes = {};
         let waveBars = [];
         let audioChunks = [];
+        let audioPlayers = {};
+        let maintenanceModeEnabled = false;
 
         console.log('Using backend URL:', BACKEND_URL);
-
-        // Инициализация AudioContext
-        function initAudioContext() {
-            if (!audioContext) {
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            }
-        }
-
-        // Создание визуализатора волны
-        function createWaveVisualizer() {
-            const waveContainer = document.getElementById('audioWave');
-            waveContainer.innerHTML = '';
-            waveBars = [];
-            
-            // Создаем 32 бара для визуализации
-            for (let i = 0; i < 32; i++) {
-                const bar = document.createElement('div');
-                bar.className = 'audio-wave-bar';
-                bar.style.height = '2px';
-                waveContainer.appendChild(bar);
-                waveBars.push(bar);
-            }
-        }
-
-        // Обновление визуализатора волны на основе уровня громкости
-        function updateWaveVisualizer(volumeLevel) {
-            if (!waveBars.length) return;
-            
-            const height = Math.max(2, volumeLevel * 40); // Масштабируем уровень громкости
-            const randomVariation = Math.random() * 10 - 5; // Небольшая случайная вариация
-            
-            waveBars.forEach((bar, index) => {
-                // Создаем волнообразный паттерн
-                const waveHeight = Math.max(2, height * (0.5 + 0.5 * Math.sin(Date.now() / 200 + index * 0.3)) + randomVariation);
-                bar.style.height = `${waveHeight}px`;
-                
-                // Добавляем цветовой градиент based on volume
-                const intensity = Math.min(255, Math.floor(volumeLevel * 255));
-                bar.style.background = `rgb(${intensity}, 180, 90)`;
-            });
-        }
-
-        // Воспроизведение аудио чанка
-        async function playAudioChunk(audioChunkBase64, volumeLevel) {
-            if (!audioContext) initAudioContext();
-            
-            try {
-                // Декодируем base64
-                const audioData = Uint8Array.from(atob(audioChunkBase64), c => c.charCodeAt(0));
-                
-                // Декодируем аудио данные
-                const audioBuffer = await audioContext.decodeAudioData(audioData.buffer);
-                
-                // Создаем источник audio
-                const source = audioContext.createBufferSource();
-                source.buffer = audioBuffer;
-                
-                // Создаем gain node для контроля громкости
-                const gainNode = audioContext.createGain();
-                gainNode.gain.value = volumeLevel || 0.5;
-                
-                // Подключаем цепочку
-                source.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-                
-                // Запускаем воспроизведение
-                source.start();
-                
-                // Обновляем визуализатор
-                updateWaveVisualizer(volumeLevel || 0.5);
-                
-                return source;
-                
-            } catch (error) {
-                console.error('Error playing audio chunk:', error);
-            }
-        }
 
         // Функция для базовой авторизации
         function getAuthHeaders() {
@@ -378,6 +357,136 @@
             };
         }
 
+        // Проверка статуса заглушки
+        async function checkMaintenanceStatus() {
+            try {
+                const response = await fetch(`${BACKEND_URL}/admin/maintenance`, {
+                    headers: getAuthHeaders(),
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    maintenanceModeEnabled = data.enabled;
+                    updateMaintenanceUI(data);
+                }
+            } catch (error) {
+                console.error('Error checking maintenance status:', error);
+            }
+        }
+
+        // Обновление UI заглушки
+        function updateMaintenanceUI(data) {
+            const btn = document.getElementById('maintenanceBtn');
+            const panel = document.getElementById('maintenancePanel');
+            const status = document.getElementById('maintenanceStatus');
+            
+            if (data.enabled) {
+                btn.innerHTML = '🚧 Заглушка (ВКЛ)';
+                btn.className = 'bg-red-600 hover:bg-red-700 px-4 py-2 rounded';
+                panel.classList.remove('hidden');
+                status.innerHTML = `<span class="text-red-400">Включена</span> - сайт недоступен для пользователей`;
+                if (data.message) {
+                    document.getElementById('maintenanceMessage').value = data.message;
+                }
+            } else {
+                btn.innerHTML = '🚧 Заглушка';
+                btn.className = 'bg-yellow-600 hover:bg-yellow-700 px-4 py-2 rounded';
+                panel.classList.add('hidden');
+                status.innerHTML = `<span class="text-green-400">Выключена</span> - сайт доступен для пользователей`;
+            }
+        }
+
+        // Переключение режима заглушки
+        async function toggleMaintenanceMode() {
+    try {
+        // ИЗМЕНЕНО: /admin/maintenance -> /admin/muffle/toggle
+        const response = await fetch(`${BACKEND_URL}/admin/muffle/toggle`, {
+            method: 'POST',
+            headers: getAuthHeaders(),
+            credentials: 'include',
+            body: JSON.stringify({ 
+                enabled: !maintenanceModeEnabled,
+                message: document.getElementById('maintenanceMessage').value
+            })
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            maintenanceModeEnabled = data.enabled;
+            updateMaintenanceUI(data);
+        }
+    } catch (error) {
+        console.error('Error toggling maintenance mode:', error);
+    }
+}
+
+        // Выключение заглушки
+        async function disableMaintenanceMode() {
+    try {
+        // ИЗМЕНЕНО: /admin/maintenance -> /admin/muffle/toggle
+        const response = await fetch(`${BACKEND_URL}/admin/muffle/toggle`, {
+            method: 'POST',
+            headers: getAuthHeaders(),
+            credentials: 'include',
+            body: JSON.stringify({ 
+                enabled: false,
+                message: document.getElementById('maintenanceMessage').value
+            })
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            maintenanceModeEnabled = data.enabled;
+            updateMaintenanceUI(data);
+        }
+    } catch (error) {
+        console.error('Error disabling maintenance mode:', error);
+    }
+}
+
+        // Обновление сообщения заглушки
+        async function updateMaintenanceMessage() {
+    try {
+        // ИЗМЕНЕНО: /admin/maintenance -> /admin/muffle/toggle
+        const response = await fetch(`${BACKEND_URL}/admin/muffle/toggle`, {
+            method: 'POST',
+            headers: getAuthHeaders(),
+            credentials: 'include',
+            body: JSON.stringify({ 
+                enabled: maintenanceModeEnabled,
+                message: document.getElementById('maintenanceMessage').value
+            })
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            alert('Сообщение заглушки обновлено');
+        }
+    } catch (error) {
+        console.error('Error updating maintenance message:', error);
+    }
+}
+
+        // Функция для обновления размера серверного буфера
+        async function updateServerBufferSize() {
+            if (!currentMonitoredRoom) return;
+            
+            try {
+                const response = await fetch(`${BACKEND_URL}/admin/audio/buffer/${currentMonitoredRoom}`, {
+                    headers: getAuthHeaders(),
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('serverBufferSize').textContent = data.buffer_size;
+                }
+            } catch (error) {
+                console.error('Error fetching server buffer size:', error);
+            }
+        }
+
         // Обработка логина
         async function handleLogin(event) {
             event.preventDefault();
@@ -385,37 +494,32 @@
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             
-            // Кодируем в base64 для Basic Auth
+            // Скрываем предыдущие ошибки
+            document.getElementById('loginError').classList.add('hidden');
+            document.getElementById('rateLimitError').classList.add('hidden');
+            
             authToken = btoa(`${username}:${password}`);
             
-            console.log('Trying to login with:', { username, password, authToken });
-            
-            // Проверяем авторизацию
             try {
-                const healthUrl = `${BACKEND_URL}/admin/health`;
-                console.log('Making request to:', healthUrl);
-                
-                const response = await fetch(healthUrl, {
+                const response = await fetch(`${BACKEND_URL}/admin/health`, {
                     headers: getAuthHeaders(),
                     credentials: 'include'
                 });
                 
-                console.log('Login response status:', response.status, response.statusText);
-                
                 if (response.ok) {
-                    console.log('Login successful');
-                    // Успешная авторизация
                     document.getElementById('loginForm').classList.add('hidden');
                     document.getElementById('adminPanel').classList.remove('hidden');
                     localStorage.setItem('adminAuth', authToken);
                     refreshData();
+                    checkMaintenanceStatus();
+                } else if (response.status === 429) {
+                    document.getElementById('rateLimitError').classList.remove('hidden');
                 } else {
-                    console.log('Login failed, status:', response.status);
-                    showLoginError();
+                    document.getElementById('loginError').classList.remove('hidden');
                 }
             } catch (error) {
                 console.error('Login error:', error);
-                showLoginError();
+                document.getElementById('loginError').classList.remove('hidden');
             }
             
             return false;
@@ -436,6 +540,7 @@
             document.getElementById('username').value = '';
             document.getElementById('password').value = '';
             document.getElementById('loginError').classList.add('hidden');
+            document.getElementById('rateLimitError').classList.add('hidden');
             
             if (refreshInterval) {
                 clearInterval(refreshInterval);
@@ -448,21 +553,21 @@
             const savedAuth = localStorage.getItem('adminAuth');
             if (savedAuth) {
                 authToken = savedAuth;
-                console.log('Found saved auth token');
                 
-                // Проверяем валидность токена
                 fetch(`${BACKEND_URL}/admin/health`, {
                     headers: getAuthHeaders(),
                     credentials: 'include'
                 })
                 .then(response => {
-                    console.log('Saved auth check status:', response.status);
                     if (response.ok) {
                         document.getElementById('loginForm').classList.add('hidden');
                         document.getElementById('adminPanel').classList.remove('hidden');
                         refreshData();
+                        checkMaintenanceStatus();
+                    } else if (response.status === 429) {
+                        document.getElementById('rateLimitError').classList.remove('hidden');
+                        localStorage.removeItem('adminAuth');
                     } else {
-                        console.log('Saved auth invalid, removing');
                         localStorage.removeItem('adminAuth');
                     }
                 })
@@ -470,8 +575,6 @@
                     console.error('Saved auth check error:', error);
                     localStorage.removeItem('adminAuth');
                 });
-            } else {
-                console.log('No saved auth token found');
             }
         }
 
@@ -501,6 +604,7 @@
                 });
                 if (response.ok) {
                     const data = await response.json();
+                    console.log('Connections data:', data);
                     updateConnections(data);
                 } else if (response.status === 401) {
                     logout();
@@ -524,83 +628,6 @@
             } catch (error) {
                 console.error('Error fetching monitors:', error);
             }
-        }
-
-        // Управление аудио воспроизведением
-        function toggleAudioPlayback() {
-            if (isPlaying) {
-                stopAudioPlayback();
-            } else {
-                startAudioPlayback();
-            }
-        }
-
-        function startAudioPlayback() {
-            if (audioChunks.length === 0) {
-                alert('Нет аудиоданных для воспроизведения');
-                return;
-            }
-            
-            isPlaying = true;
-            document.getElementById('playPauseBtn').textContent = '⏸️ Пауза';
-            
-            // Воспроизводим все чанки последовательно
-            playAudioSequence();
-        }
-
-        function stopAudioPlayback() {
-            isPlaying = false;
-            document.getElementById('playPauseBtn').textContent = '▶️ Воспроизвести';
-            
-            // Останавливаем все audio nodes
-            Object.values(audioNodes).forEach(node => {
-                try {
-                    node.stop();
-                } catch (e) {}
-            });
-            audioNodes = {};
-        }
-
-        async function playAudioSequence() {
-            if (!isPlaying) return;
-            
-            for (const chunk of audioChunks) {
-                if (!isPlaying) break;
-                
-                try {
-                    const source = await playAudioChunk(chunk.audio_chunk, chunk.volume_level);
-                    if (source) {
-                        audioNodes[Date.now()] = source;
-                    }
-                    
-                    // Ждем завершения воспроизведения перед следующим чанком
-                    await new Promise(resolve => setTimeout(resolve, 100)); // Примерная задержка
-                    
-                } catch (error) {
-                    console.error('Error playing audio sequence:', error);
-                }
-            }
-            
-            if (isPlaying) {
-                // Повторяем воспроизведение
-                playAudioSequence();
-            }
-        }
-
-        function downloadAudio() {
-            if (audioChunks.length === 0) {
-                alert('Нет аудиоданных для скачивания');
-                return;
-            }
-            
-            // Здесь можно реализовать создание WAV файла из аудио чанков
-            alert('Функция скачивания аудио будет реализована в следующей версии');
-        }
-
-        function clearAudioBuffer() {
-            audioChunks = [];
-            document.getElementById('audioBufferSize').textContent = '0';
-            stopAudioPlayback();
         }
 
         // Мониторинг комнат
@@ -640,10 +667,6 @@
                     console.log('Monitor WebSocket connected');
                     document.getElementById('monitorStatus').textContent = 'Подключено к комнате';
                     document.getElementById('audioIndicator').className = 'w-3 h-3 bg-green-500 rounded-full animate-ping';
-                    
-                    // Инициализируем аудио контекст и визуализатор
-                    initAudioContext();
-                    createWaveVisualizer();
                 };
 
                 monitorWebSocket.onmessage = function(event) {
@@ -662,7 +685,6 @@
                     stopMonitoring();
                 };
 
-                // Показываем панель мониторинга
                 document.getElementById('audioMonitor').classList.remove('hidden');
                 document.getElementById('currentRoomId').textContent = roomId;
 
@@ -679,19 +701,9 @@
                     break;
                 case 'monitor_started':
                     updateParticipantsList(data.participants || []);
-                    createAudioPlayers(data.participants || []);
                     break;
                 case 'room_status':
                     updateParticipantsList(data.participants || []);
-                    createAudioPlayers(data.participants || []);
-                    break;
-                case 'participant_joined':
-                    addParticipant(data.user_id);
-                    createAudioPlayer(data.user_id);
-                    break;
-                case 'participant_left':
-                    removeParticipant(data.user_id);
-                    removeAudioPlayer(data.user_id);
                     break;
             }
         }
@@ -701,123 +713,12 @@
             document.getElementById('audioChunksCount').textContent = audioChunksCount;
             document.getElementById('lastAudioTime').textContent = new Date().toLocaleTimeString();
             
-            // Сохраняем аудио чанк
-            audioChunks.push(data);
-            document.getElementById('audioBufferSize').textContent = audioChunks.length;
-            
-            // Ограничиваем размер буфера
-            if (audioChunks.length > 100) {
-                audioChunks.shift();
-            }
-            
-            // Анимация индикатора
             const indicator = document.getElementById('audioIndicator');
             indicator.className = 'w-3 h-3 bg-green-500 rounded-full animate-ping';
             
             setTimeout(() => {
                 indicator.className = 'w-3 h-3 bg-green-500 rounded-full';
             }, 300);
-            
-            // Воспроизводим аудио в реальном времени
-            if (data.audio_chunk && data.volume_level) {
-                playAudioChunk(data.audio_chunk, data.volume_level);
-            }
-            
-            // Обновляем счетчик для конкретного пользователя
-            if (data.user_id) {
-                if (!audioPlayers[data.user_id]) {
-                    audioPlayers[data.user_id] = { count: 0 };
-                }
-                audioPlayers[data.user_id].count++;
-                
-                const countElement = document.getElementById(`audio-count-${data.user_id}`);
-                if (countElement) {
-                    countElement.textContent = audioPlayers[data.user_id].count;
-                }
-                
-                // Обновляем уровень аудио
-                updateAudioLevel(data.user_id, data.volume_level);
-                
-                // Обновляем активность участника
-                const participantElement = document.getElementById(`participant-${data.user_id}`);
-                if (participantElement) {
-                    participantElement.classList.add('participant-active');
-                    setTimeout(() => {
-                        participantElement.classList.remove('participant-active');
-                    }, 1000);
-                }
-            }
-        }
-
-        function updateAudioLevel(userId, volumeLevel = null) {
-            const meter = document.getElementById(`audio-meter-${userId}`);
-            const indicator = document.getElementById(`audio-indicator-${userId}`);
-            
-            if (meter && indicator) {
-                // Используем реальный уровень громкости
-                const audioLevel = volumeLevel !== null ? Math.min(100, volumeLevel * 100) : 0;
-                
-                meter.style.width = `${audioLevel}%`;
-                
-                // Мигаем индикатором
-                indicator.className = 'w-3 h-3 bg-green-500 rounded-full animate-ping';
-                setTimeout(() => {
-                    if (audioLevel > 0) {
-                        indicator.className = 'w-3 h-3 bg-green-500 rounded-full';
-                    } else {
-                        indicator.className = 'w-3 h-3 bg-gray-500 rounded-full';
-                    }
-                }, 300);
-            }
-        }
-
-        function createAudioPlayers(participants) {
-            const container = document.getElementById('audioPlayers');
-            container.innerHTML = '';
-            
-            participants.forEach(participant => {
-                createAudioPlayer(participant.user_id || participant);
-            });
-        }
-
-        function createAudioPlayer(userId) {
-            const container = document.getElementById('audioPlayers');
-            
-            const playerElement = document.createElement('div');
-            playerElement.id = `audio-player-${userId}`;
-            playerElement.className = 'bg-gray-800 p-4 rounded-lg';
-            playerElement.innerHTML = `
-                <div class="flex items-center justify-between mb-2">
-                    <div class="font-medium">👤 ${userId}</div>
-                    <div class="w-3 h-3 bg-gray-500 rounded-full" id="audio-indicator-${userId}"></div>
-                </div>
-                <div class="flex items-center space-x-2 mb-2">
-                    <span class="text-xs text-gray-400">Уровень:</span>
-                    <div class="flex-1 bg-gray-700 rounded-full h-2">
-                        <div class="bg-green-500 h-2 rounded-full transition-all duration-100" 
-                             style="width: 0%" 
-                             id="audio-meter-${userId}"></div>
-                    </div>
-                </div>
-                <div class="text-xs text-gray-400">
-                    Получено chunks: <span id="audio-count-${userId}">0</span>
-                </div>
-            `;
-            
-            container.appendChild(playerElement);
-            
-            // Инициализируем счетчик для этого пользователя
-            if (!audioPlayers[userId]) {
-                audioPlayers[userId] = { count: 0 };
-            }
-        }
-
-        function removeAudioPlayer(userId) {
-            const playerElement = document.getElementById(`audio-player-${userId}`);
-            if (playerElement) {
-                playerElement.remove();
-            }
-            delete audioPlayers[userId];
         }
 
         function updateParticipantsList(participants) {
@@ -835,29 +736,6 @@
                 `;
                 container.appendChild(participantElement);
             });
-        }
-
-        function addParticipant(userId) {
-            const container = document.getElementById('participantsList');
-            const participantElement = document.createElement('div');
-            participantElement.id = `participant-${userId}`;
-            participantElement.className = 'bg-gray-700 p-2 rounded text-sm';
-            participantElement.innerHTML = `
-                <div class="font-medium">👤 ${userId}</div>
-                <div class="text-xs text-gray-400">Статус: connected</div>
-            `;
-            container.appendChild(participantElement);
-            
-            // Создаем аудиоплеер для нового участника
-            createAudioPlayer(userId);
-        }
-
-        function removeParticipant(userId) {
-            const element = document.getElementById(`participant-${userId}`);
-            if (element) {
-                element.remove();
-            }
-            removeAudioPlayer(userId);
         }
 
         async function stopMonitoring() {
@@ -884,15 +762,6 @@
             document.getElementById('audioMonitor').classList.add('hidden');
             document.getElementById('monitorRoomId').value = '';
             audioChunksCount = 0;
-            
-            // Останавливаем воспроизведение
-            stopAudioPlayback();
-            clearAudioBuffer();
-            
-            // Очищаем аудиоплееры
-            const audioPlayersContainer = document.getElementById('audioPlayers');
-            audioPlayersContainer.innerHTML = '';
-            audioPlayers = {};
         }
 
         function updateMonitorsList(monitors) {
@@ -913,6 +782,10 @@
         }
 
         async function forceDisconnect(userId) {
+            if (!confirm(`Вы уверены, что хотите отключить пользователя ${userId}?`)) {
+                return;
+            }
+
             try {
                 const response = await fetch(`${BACKEND_URL}/admin/disconnect`, {
                     method: 'POST',
@@ -993,7 +866,7 @@
             if (!connections || connections.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="5" class="py-4 text-center text-gray-400">
+                        <td colspan="6" class="py-4 text-center text-gray-400">
                             Нет активных подключений
                         </td>
                     </tr>
@@ -1012,6 +885,7 @@
                 
                 row.innerHTML = `
                     <td class="py-3 font-mono text-sm">${conn.user_id}</td>
+                    <td class="py-3 font-mono text-sm">${conn.ip_address || 'N/A'}</td>
                     <td class="py-3">
                         <span class="px-2 py-1 rounded text-xs ${statusClass}">
                             ${conn.status}
@@ -1038,7 +912,11 @@
         }
 
         async function refreshData() {
-            await Promise.all([fetchStats(), fetchConnections(), refreshMonitors()]);
+            await Promise.all([
+                fetchStats(), 
+                fetchConnections(), 
+                refreshMonitors()
+            ]);
         }
 
         function refreshConnections() {
@@ -1071,9 +949,9 @@
         window.logout = logout;
         window.startMonitoring = startMonitoring;
         window.stopMonitoring = stopMonitoring;
-        window.toggleAudioPlayback = toggleAudioPlayback;
-        window.downloadAudio = downloadAudio;
-        window.clearAudioBuffer = clearAudioBuffer;
+        window.toggleMaintenanceMode = toggleMaintenanceMode;
+        window.disableMaintenanceMode = disableMaintenanceMode;
+        window.updateMaintenanceMessage = updateMaintenanceMessage;
     </script>
 </body>
 </html>

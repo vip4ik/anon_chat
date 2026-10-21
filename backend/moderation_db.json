@@ -1,0 +1,15 @@
+{
+  "admin": {
+    "username": "admin",
+    "password_hash": "$2b$12$cyqLoa40Z41jo4EityLNwu4k/opSjQCuZUBy4R26y1mGxQtSr7l9i",
+    "role": "admin",
+    "permissions": [
+      "view",
+      "warn",
+      "mute",
+      "kick",
+      "ban",
+      "manage_users"
+    ]
+  }
+}
