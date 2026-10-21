@@ -1,123 +1,858 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+/* Cosmic Theme Variables */
+:root {
+  --cosmic-primary: #6366f1;
+  --cosmic-secondary: #8b5cf6;
+  --cosmic-accent: #06b6d4;
+  --cosmic-dark: #0f172a;
+  --cosmic-darker: #020617;
+  --cosmic-border: rgba(99, 102, 241, 0.3);
+  --cosmic-glow: 0 0 20px rgba(99, 102, 241, 0.3);
 }
 
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* Cosmic Background */
+.cosmic-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  background: linear-gradient(45deg, var(--cosmic-darker) 0%, var(--cosmic-dark) 100%);
 }
 
-/* Custom animations */
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
+.stars {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(2px 2px at 20px 30px, #eee, transparent),
+    radial-gradient(2px 2px at 40px 70px, #fff, transparent);
+  background-repeat: repeat;
+  background-size: 200px 100px;
+  animation: stars-animation 100s linear infinite;
 }
 
-.animate-pulse {
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+.cosmic-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
 }
 
-/* Custom gradient backgrounds */
-.bg-gradient-to-br {
-  background-image: linear-gradient(to bottom right, var(--tw-gradient-stops));
+@keyframes stars-animation {
+  from { transform: translateY(0); }
+  to { transform: translateY(-100px); }
 }
 
-.bg-gradient-to-r {
-  background-image: linear-gradient(to right, var(--tw-gradient-stops));
+/* Main App */
+.cosmic-app {
+  min-height: 100vh;
+  background: transparent;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
 }
 
-/* Hover effects */
-.transform {
-  transform: translateX(0) translateY(0) rotate(0) skewX(0) skewY(0) scaleX(1) scaleY(1);
-}
-
-.hover\:scale-105:hover {
-  transform: scale(1.05);
-}
-
-/* Smooth transitions */
-.transition-all {
-  transition-property: all;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.duration-200 {
-  transition-duration: 200ms;
-}
-
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: #374151;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #6B7280;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #9CA3AF;
-}
-
-/* Button focus states */
-button:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
-}
-
-/* Responsive design */
-@media (max-width: 640px) {
-  .container {
-    padding: 1rem;
-  }
-}
-
-/* Voice chat indicators */
-.voice-indicator {
+/* Cosmic Frame */
+.cosmic-frame {
   position: relative;
+  max-width: 600px;
+  width: 100%;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  border: 1px solid var(--cosmic-border);
+  box-shadow: var(--cosmic-glow);
   overflow: hidden;
 }
 
-.voice-indicator::before {
-  content: '';
+.frame-border {
+  display: none; /* Скрыть совсем */
+}
+
+.frame-border:first-child {
+  top: 0;
+}
+
+.frame-border:last-child {
+  bottom: 0;
+}
+
+.frame-content {
+  padding: 30px;
+}
+
+/* Header */
+.cosmic-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 25px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--cosmic-border);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.logo-icon {
+  font-size: 2.5rem;
+  animation: float 3s ease-in-out infinite;
+}
+
+.logo-text h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--cosmic-primary) 0%, var(--cosmic-secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0;
+}
+
+.tagline {
+  color: #94a3b8;
+  font-size: 0.9rem;
+  margin: 5px 0 0 0;
+}
+
+/* Online Counter */
+.cosmic-counter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.counter-content {
+  text-align: center;
+}
+
+.online-number {
+  font-size: 2rem;
+  font-weight: 800;
+  color: white;
+  margin-bottom: 5px;
+}
+
+.online-number.growing {
+  animation: pulse 0.5s ease-in-out;
+}
+
+.online-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #94a3b8;
+  font-size: 0.9rem;
+}
+
+.online-pulse {
+  width: 8px;
+  height: 8px;
+  background: #10b981;
+  border-radius: 50%;
+  animation: blink 2s infinite;
+}
+
+/* Timer */
+.cosmic-timer {
+  text-align: center;
+  margin: 20px 0;
+  padding: 15px;
+  background: rgba(6, 182, 212, 0.1);
+  border-radius: 12px;
+  border: 1px solid rgba(6, 182, 212, 0.3);
+}
+
+.timer-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.timer-icon {
+  font-size: 1.5rem;
+}
+
+.timer-info {
+  text-align: left;
+}
+
+.timer-label {
+  color: #94a3b8;
+  font-size: 0.9rem;
+  margin-bottom: 2px;
+}
+
+.timer-display {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--cosmic-accent);
+}
+
+/* Notifications */
+.notifications-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  max-width: 350px;
+}
+
+.cosmic-notification {
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid;
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 10px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+  animation: slideIn 0.3s ease-out;
+}
+
+.cosmic-glow-effect {
   position: absolute;
   top: 0;
-  left: -100%;
+  left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: left 0.5s;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+  animation: shimmer 3s infinite;
 }
 
-.voice-indicator:hover::before {
-  left: 100%;
+.notification-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
 }
 
-/* Loading spinner */
+.notification-icon {
+  font-size: 1.2rem;
+}
+
+.notification-title {
+  font-weight: 600;
+  font-size: 0.95rem;
+  flex: 1;
+}
+
+.notification-close {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  font-size: 1.2rem;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+}
+
+.notification-close:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+.notification-message {
+  font-size: 0.9rem;
+  color: #e2e8f0;
+  line-height: 1.4;
+}
+
+/* Modal Styles */
+.cosmic-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(2, 6, 23, 0.8);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 20px;
+}
+
+.cosmic-modal {
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--cosmic-border);
+  border-radius: 16px;
+  padding: 25px;
+  max-width: 450px;
+  width: 100%;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), var(--cosmic-glow);
+}
+
+.cosmic-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid var(--cosmic-border);
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.modal-icon {
+  font-size: 1.5rem;
+}
+
+.cosmic-modal-header h2 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: white;
+  margin: 0;
+}
+
+.close-button {
+  background: rgba(255,255,255,0.1);
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  font-size: 1.5rem;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.close-button:hover:not(:disabled) {
+  background: rgba(255,255,255,0.2);
+  color: white;
+}
+
+.cosmic-modal-body {
+  margin-bottom: 25px;
+}
+
+.cosmic-form-group {
+  margin-bottom: 20px;
+}
+
+.cosmic-form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #e2e8f0;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.cosmic-select, .cosmic-textarea {
+  width: 100%;
+  padding: 12px 16px;
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid var(--cosmic-border);
+  border-radius: 10px;
+  color: white;
+  font-size: 0.95rem;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.cosmic-select:focus, .cosmic-textarea:focus {
+  outline: none;
+  border-color: var(--cosmic-primary);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.cosmic-textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.cosmic-modal-footer {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-bottom: 15px;
+}
+
+.cosmic-btn {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  justify-content: center;
+}
+
+.cosmic-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.cosmic-btn-primary {
+  background: linear-gradient(135deg, var(--cosmic-primary) 0%, var(--cosmic-secondary) 100%);
+  color: white;
+}
+
+.cosmic-btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+}
+
+.cosmic-btn-secondary {
+  background: rgba(30, 41, 59, 0.8);
+  color: white;
+  border: 1px solid var(--cosmic-border);
+}
+
+.cosmic-btn-secondary:hover:not(:disabled) {
+  background: rgba(99, 102, 241, 0.1);
+  border-color: var(--cosmic-primary);
+}
+
+.loading-spinner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .spinner {
-  border: 2px solid #374151;
-  border-top: 2px solid #60A5FA;
+  width: 16px;
+  height: 16px;
+  border: 2px solid transparent;
+  border-top: 2px solid white;
   border-radius: 50%;
-  width: 20px;
-  height: 20px;
   animation: spin 1s linear infinite;
+}
+
+.modal-note {
+  text-align: center;
+  padding: 12px;
+  background: rgba(6, 182, 212, 0.1);
+  border-radius: 8px;
+  color: #06b6d4;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.note-icon {
+  font-size: 0.9rem;
+}
+
+/* Sections */
+.cosmic-section {
+  background: rgba(30, 41, 59, 0.5);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  border: 1px solid var(--cosmic-border);
+}
+
+/* Search Settings */
+.setting-group {
+  margin-bottom: 20px;
+}
+
+.setting-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #e2e8f0;
+  font-weight: 500;
+}
+
+.category-selector {
+  position: relative;
+}
+
+.category-toggle {
+  width: 100%;
+  padding: 14px 16px;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid var(--cosmic-border);
+  border-radius: 10px;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.category-toggle:hover {
+  border-color: var(--cosmic-primary);
+  background: rgba(99, 102, 241, 0.1);
+}
+
+.category-icon {
+  font-size: 1.2rem;
+}
+
+.category-name {
+  flex: 1;
+  text-align: left;
+  font-weight: 500;
+}
+
+.dropdown-arrow {
+  transition: transform 0.2s;
+  color: #94a3b8;
+}
+
+.dropdown-arrow.open {
+  transform: rotate(180deg);
+}
+
+.cosmic-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--cosmic-border);
+  border-radius: 10px;
+  margin-top: 5px;
+  z-index: 100;
+  max-height: 300px;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.category-option {
+  width: 100%;
+  padding: 14px 16px;
+  background: transparent;
+  border: none;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+  border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+}
+
+.category-option:last-child {
+  border-bottom: none;
+}
+
+.category-option:hover {
+  background: rgba(99, 102, 241, 0.1);
+}
+
+.category-option.selected {
+  background: rgba(99, 102, 241, 0.2);
+}
+
+.option-icon {
+  font-size: 1.1rem;
+}
+
+.option-info {
+  flex: 1;
+}
+
+.option-name {
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+
+.option-desc {
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+.gender-settings {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.gender-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #e2e8f0;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.category-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  background: rgba(99, 102, 241, 0.1);
+  border-radius: 8px;
+  color: var(--cosmic-primary);
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.info-icon {
+  font-size: 1rem;
+}
+
+/* Status */
+.status-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.status-label {
+  color: #94a3b8;
+  font-size: 0.9rem;
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.status-dot.idle {
+  background: #6b7280;
+}
+
+.status-dot.searching {
+  background: #f59e0b;
+  animation: pulse 1.5s infinite;
+}
+
+.status-dot.connected {
+  background: #10b981;
+  animation: pulse 2s infinite;
+}
+
+.status-text {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.status-text.searching {
+  color: #f59e0b;
+}
+
+.status-text.connected {
+  color: #10b981;
+}
+
+.status-message {
+  color: #e2e8f0;
+  font-size: 1rem;
+  text-align: center;
+}
+
+/* Controls */
+.controls {
+  text-align: center;
+}
+
+.btn-search {
+  width: 100%;
+  padding: 16px;
+  font-size: 1.1rem;
+  background: linear-gradient(135deg, var(--cosmic-primary) 0%, var(--cosmic-secondary) 100%);
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+  animation: glow 2s ease-in-out infinite alternate;
+}
+
+/* Voice Controls */
+.voice-controls {
+  text-align: center;
+}
+
+.volume-control {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  justify-content: center;
+}
+
+.volume-icon {
+  font-size: 1.1rem;
+  color: #94a3b8;
+}
+
+.volume-slider {
+  width: 200px;
+  height: 6px;
+  background: rgba(30, 41, 59, 0.8);
+  border-radius: 3px;
+  outline: none;
+  -webkit-appearance: none;
+}
+
+.volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  background: var(--cosmic-primary);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+.control-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.btn-control {
+  flex: 1;
+  max-width: 100px;
+  padding: 12px 8px;
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid var(--cosmic-border);
+  color: white;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.btn-control:hover {
+  background: rgba(99, 102, 241, 0.1);
+  border-color: var(--cosmic-primary);
+  transform: translateY(-2px);
+}
+
+.btn-control.muted {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.5);
+}
+
+.control-icon {
+  font-size: 1.3rem;
+}
+
+.control-text {
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+/* Report Section */
+.report-section {
+  text-align: center;
+  margin: 15px 0;
+}
+
+.btn-report {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+  padding: 10px 16px;
+  font-size: 0.9rem;
+}
+
+.btn-report:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: #ef4444;
+}
+
+/* Video Control Section */
+.video-control-section {
+  text-align: center;
+  margin: 15px 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.cosmic-btn-video {
+  background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  color: white;
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 220px;
+  height: 44px;
+  justify-content: center;
+}
+
+.cosmic-btn-video:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
+  background: linear-gradient(135deg, #ff7979, #ff6b6b);
+}
+
+.cosmic-btn-video:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.cosmic-btn-video:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.7; }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+@keyframes glow {
+  0% { box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4); }
+  100% { box-shadow: 0 4px 20px rgba(99, 102, 241, 0.6); }
 }
 
 @keyframes spin {
@@ -125,232 +860,3804 @@ button:focus {
   100% { transform: rotate(360deg); }
 }
 
-/* Status badges */
-.status-badge {
-  display: inline-flex;
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes slideIn {
+  from { 
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to { 
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .cosmic-app {
+    padding: 10px;
+  }
+  
+  .frame-content {
+    padding: 20px;
+  }
+  
+  .cosmic-header {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+  
+  .gender-settings {
+    grid-template-columns: 1fr;
+  }
+  
+  .control-buttons {
+    flex-wrap: wrap;
+  }
+  
+  .cosmic-modal-footer {
+    flex-direction: column;
+  }
+  
+  .notifications-container {
+    right: 10px;
+    left: 10px;
+    max-width: none;
+  }
+  
+  .btn-report,
+  .cosmic-btn-video {
+    min-width: 200px;
+    height: 42px;
+    font-size: 0.85rem;
+    padding: 8px 16px;
+  }
+  
+  .video-control-section {
+    margin: 12px 0;
+  }
+}
+
+/* Стили для статуса модерации */
+.moderation-status-section {
+  margin: 10px 0;
+}
+
+.moderation-status {
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin: 5px 0;
+  font-size: 12px;
+  display: flex;
   align-items: center;
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.5rem;
-  font-size: 0.75rem;
+  gap: 8px;
+  border: 1px solid;
+}
+
+.moderation-status.muted {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+}
+
+.moderation-status.banned {
+  background: rgba(220, 38, 38, 0.1);
+  border-color: rgba(220, 38, 38, 0.3);
+  color: #dc2626;
+}
+
+.status-icon {
+  font-size: 14px;
+}
+
+/* Стили для уведомлений модерации */
+.notification-moderator {
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  border-left: 4px solid #8b5cf6;
+  box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+}
+
+.notification-admin {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  border-left: 4px solid #ef4444;
+  box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+}
+
+.notification-system {
+  background: linear-gradient(135deg, #059669, #047857);
+  border-left: 4px solid #10b981;
+  box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3);
+}
+
+.notification-warning {
+  background: linear-gradient(135deg, #d97706, #b45309);
+  border-left: 4px solid #f59e0b;
+  box-shadow: 0 4px 15px rgba(217, 119, 6, 0.3);
+}
+
+.notification-success {
+  background: linear-gradient(135deg, #059669, #047857);
+  border-left: 4px solid #10b981;
+  box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3);
+}
+
+.notification-info {
+  background: linear-gradient(135deg, #0369a1, #075985);
+  border-left: 4px solid #0ea5e9;
+  box-shadow: 0 4px 15px rgba(3, 105, 161, 0.3);
+}
+
+/* Анимации появления уведомлений */
+@keyframes slideInRight {
+  from { 
+    transform: translateX(100%); 
+    opacity: 0; 
+  }
+  to { 
+    transform: translateX(0); 
+    opacity: 1; 
+  }
+}
+
+.cosmic-notification {
+  animation: slideInRight 0.3s ease-out;
+}
+/* Стили для модального окна тарифов */
+.tariff-modal {
+  max-width: 500px;
+}
+
+.tariff-description {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #e2e8f0;
+  line-height: 1.5;
+  font-size: 0.9rem;
+}
+
+/* Компактная сетка тарифов - 3 колонки */
+.tariffs-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+/* Компактная карточка тарифа */
+.tariff-card {
+  background: rgba(30, 41, 59, 0.9);
+  border: 2px solid var(--cosmic-border);
+  border-radius: 10px;
+  padding: 15px 10px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 90px;
+  justify-content: center;
+  color: white;
+}
+
+.tariff-card:hover {
+  border-color: var(--cosmic-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(99, 102, 241, 0.3);
+  background: rgba(99, 102, 241, 0.1);
+}
+
+.tariff-card.selected {
+  background: rgba(99, 102, 241, 0.15);
+  border-color: var(--cosmic-primary);
+  box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+  transform: translateY(-2px);
+}
+
+/* Основная информация тарифа - компактная */
+.tariff-main-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+}
+
+.tariff-time {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--cosmic-primary);
+  line-height: 1;
+}
+
+.tariff-price {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: white;
+  line-height: 1;
+}
+
+/* Детали тарифа - компактные */
+.tariff-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+}
+
+.tariff-duration {
+  font-size: 0.8rem;
+  color: #94a3b8;
   font-weight: 500;
 }
 
-.status-idle {
-  background-color: #374151;
-  color: #9CA3AF;
+.tariff-badge {
+  padding: 3px 8px;
+  border-radius: 15px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
 }
 
-.status-searching {
-  background-color: #F59E0B;
-  color: #FFFFFF;
+.tariff-badge.standard {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
 }
 
-.status-connected {
-  background-color: #10B981;
-  color: #FFFFFF;
+.tariff-badge.vip {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+  box-shadow: 0 2px 6px rgba(245, 158, 11, 0.3);
 }
 
-/* Audio visualizer placeholder */
-.audio-visualizer {
+/* Индикатор выбора - компактный */
+.tariff-card.selected::before {
+  content: '✓';
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 16px;
+  height: 16px;
+  background: var(--cosmic-primary);
+  color: white;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 40px;
-  background: linear-gradient(45deg, #1F2937, #374151);
-  border-radius: 8px;
-  margin: 0.5rem 0;
+  font-size: 0.7rem;
+  font-weight: bold;
 }
 
-.audio-bar {
-  width: 3px;
-  height: 20px;
-  background: #60A5FA;
-  margin: 0 1px;
-  animation: audioWave 1s ease-in-out infinite;
+/* Верхняя полоса для выбранного тарифа */
+.tariff-card.selected::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--cosmic-primary), var(--cosmic-secondary));
 }
 
-.audio-bar:nth-child(2) { animation-delay: 0.1s; }
-.audio-bar:nth-child(3) { animation-delay: 0.2s; }
-.audio-bar:nth-child(4) { animation-delay: 0.3s; }
-.audio-bar:nth-child(5) { animation-delay: 0.4s; }
-
-@keyframes audioWave {
-  0%, 100% { height: 20px; }
-  50% { height: 5px; }
+/* Специальные стили для VIP тарифа - такого же размера */
+.tariff-card.vip-tariff {
+  /* Убрали grid-column: 1 / -1 чтобы был такого же размера */
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(217, 119, 6, 0.05));
+  border: 2px solid rgba(245, 158, 11, 0.3);
+  /* Сохраняем тот же размер что и у остальных */
+  min-height: 90px;
+  padding: 15px 10px;
 }
-.animated-background {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  overflow: hidden;
+
+.tariff-card.vip-tariff:hover {
+  border-color: #f59e0b;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(217, 119, 6, 0.1));
+  box-shadow: 0 6px 15px rgba(245, 158, 11, 0.3);
+}
+
+.tariff-card.vip-tariff.selected {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(217, 119, 6, 0.15));
+  border-color: #f59e0b;
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.4);
+}
+
+.tariff-card.vip-tariff .tariff-time {
+  color: #f59e0b;
+  font-size: 1.6rem; /* Немного больше для VIP */
+}
+
+.tariff-card.vip-tariff .tariff-price {
+  color: #fcd34d;
+}
+
+/* Адаптивность для компактных тарифов */
+@media (max-width: 768px) {
+  .tariffs-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  
+  .tariff-card {
+    padding: 12px 8px;
+    min-height: 85px;
+    gap: 6px;
+  }
+  
+  .tariff-time {
+    font-size: 1.3rem;
+  }
+  
+  .tariff-price {
+    font-size: 1rem;
+  }
+  
+  .tariff-duration {
+    font-size: 0.75rem;
+  }
+  
+  .tariff-badge {
+    font-size: 0.65rem;
+    padding: 2px 6px;
+  }
+  
+  .tariff-card.vip-tariff {
+    min-height: 85px;
+    padding: 12px 8px;
+  }
+  
+  .tariff-card.vip-tariff .tariff-time {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .tariffs-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+  }
+  
+  .tariff-card {
+    min-height: 80px;
+    padding: 10px 6px;
+  }
+  
+  .tariff-time {
+    font-size: 1.2rem;
+  }
+  
+  .tariff-price {
+    font-size: 0.95rem;
+  }
+  
+  .tariff-card.vip-tariff .tariff-time {
+    font-size: 1.4rem;
+  }
+}
+
+/* Убедитесь, что текст виден */
+.tariff-card * {
+  color: inherit;
+  margin: 0;
+}
+/* Стили для видеоконтейнера */
+.video-container.cosmic-video-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+  background: radial-gradient(ellipse at center, #0c1445 0%, #020510 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px;
+}
+/* Стили для контроля громкости в видео-режиме */
+.remote-video {
   position: relative;
 }
 
-.background-animation {
+.video-volume-control {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  z-index: 0;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
 }
 
-.balls {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
+.volume-popup {
+  background: rgba(0, 0, 0, 0.8);
+  padding: 10px 15px;
+  border-radius: 25px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  /* Убрать анимацию для мгновенного появления */
+  /* animation: fadeIn 0.3s ease; */
 }
 
-.ball {
-  position: absolute;
-  background: rgba(255, 255, 255, 0.1);
+.volume-slider.horizontal {
+  width: 100px;
+  height: 6px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+  outline: none;
+}
+
+.volume-slider.horizontal::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
-  width: var(--size, 15px);
-  height: var(--size, 15px);
-  animation: float var(--duration, 20s) ease-in-out infinite;
-  animation-delay: var(--delay, 0s);
-  left: var(--left, 0%);
-  top: var(--top, 0%);
-  pointer-events: none;
+  background: #4dabf7;
+  cursor: pointer;
+  border: 2px solid white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
-.ball:nth-child(even) {
-  background: rgba(255, 255, 255, 0.05);
-  animation-direction: reverse;
+.volume-slider.horizontal::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #4dabf7;
+  cursor: pointer;
+  border: 2px solid white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0) translateX(0) rotate(0deg);
+.volume-icon {
+  font-size: 14px;
+  opacity: 0.8;
+  min-width: 20px;
+  text-align: center;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
   }
-  25% {
-    transform: translateY(-20px) translateX(10px) rotate(5deg);
-  }
-  50% {
-    transform: translateY(-40px) translateX(-15px) rotate(10deg);
-  }
-  75% {
-    transform: translateY(-20px) translateX(-10px) rotate(5deg);
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
-/* Стили для выпадающего списка категорий */
-.absolute {
+
+/* Убедитесь, что видео-контейнеры имеют position: relative */
+
+
+/* Стили для отдельных видео окон */
+.local-video, .remote-video {
+  position: relative;
+  width: 35%;
+  height: 70%;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 0 50px rgba(0, 150, 255, 0.3);
+  border: 2px solid rgba(100, 200, 255, 0.3);
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.video-element {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.video-label {
   position: absolute;
+  top: 15px;
+  left: 15px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 8px 15px;
+  border-radius: 15px;
+  font-size: 14px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.z-20 {
-  z-index: 20;
+/* Космическая панель управления - УМЕНЬШЕННАЯ */
+.cosmic-controls-panel {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 15px;
+  z-index: 1001;
+  background: rgba(10, 20, 50, 0.9);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(100, 200, 255, 0.3);
+  border-radius: 20px;
+  padding: 15px 25px;
+  box-shadow: 0 0 30px rgba(0, 150, 255, 0.4);
+  max-width: 80%;
+  min-width: auto;
 }
 
-.max-h-60 {
-  max-height: 15rem;
+/* УМЕНЬШЕННЫЕ космические кнопки */
+.cosmic-control-btn {
+  width: 60px;
+  height: 60px;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 20px;
+  color: white;
+  position: relative;
+  overflow: hidden;
 }
 
-.overflow-y-auto {
+/* УМЕНЬШЕННЫЙ текст под кнопками */
+.btn-label {
+  font-size: 10px;
+  margin-top: 4px;
+  opacity: 0.9;
+  font-weight: 500;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+  .cosmic-controls-panel {
+    gap: 10px;
+    padding: 12px 20px;
+    bottom: 15px;
+    max-width: 90%;
+  }
+  
+  .cosmic-control-btn {
+    width: 50px;
+    height: 50px;
+    font-size: 18px;
+  }
+  
+  .btn-label {
+    font-size: 9px;
+  }
+}
+
+/* Индивидуальные стили для кнопок */
+.btn-mic {
+  background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+  box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+}
+
+.btn-mic.muted {
+  background: linear-gradient(135deg, #747d8c, #57606f);
+}
+
+.btn-stop {
+  background: linear-gradient(135deg, #ff9ff3, #f368e0);
+  box-shadow: 0 5px 15px rgba(255, 159, 243, 0.4);
+}
+
+.btn-next {
+  background: linear-gradient(135deg, #48dbfb, #0abde3);
+  box-shadow: 0 5px 15px rgba(72, 219, 251, 0.4);
+}
+
+.btn-video-mode {
+  background: linear-gradient(135deg, #1dd1a1, #10ac84);
+  box-shadow: 0 5px 15px rgba(29, 209, 161, 0.4);
+}
+
+/* Текст под кнопками */
+.btn-label {
+  font-size: 11px;
+  margin-top: 5px;
+  opacity: 0.9;
+  font-weight: 500;
+}
+
+/* Анимация появления */
+@keyframes cosmicAppear {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.video-container.cosmic-video-container,
+.cosmic-controls-panel {
+  animation: cosmicAppear 0.5s ease-out;
+}
+
+/* Звездный фон для видео */
+.video-container.cosmic-video-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 4px),
+    radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 3px),
+    radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 4px);
+  background-size: 550px 550px, 350px 350px, 250px 250px;
+  background-position: 0 0, 40px 60px, 130px 270px;
+  animation: starsMove 100s linear infinite;
+}
+
+@keyframes starsMove {
+  from { transform: translateY(0); }
+  to { transform: translateY(-550px); }
+}
+.video-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+  color: white;
+}
+
+.placeholder-icon {
+  font-size: 48px;
+  margin-bottom: 15px;
+  opacity: 0.7;
+}
+
+.placeholder-text {
+  font-size: 16px;
+  text-align: center;
+  opacity: 0.8;
+  max-width: 80%;
+}
+/* Режим заглушки */
+.maintenance-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Фоновые эффекты */
+.background-effects {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+}
+
+.stars {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(2px 2px at 20px 30px, #3b82f6, transparent),
+    radial-gradient(2px 2px at 40px 70px, #8b5cf6, transparent),
+    radial-gradient(2px 2px at 80px 40px, #06b6d4, transparent);
+  background-repeat: repeat;
+  animation: twinkle 3s infinite alternate;
+}
+
+.nebula {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle at center, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+  filter: blur(40px);
+  animation: pulse 4s infinite alternate;
+}
+
+/* Контент */
+.maintenance-content {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  max-width: 500px;
+  width: 100%;
+  background: rgba(30, 41, 59, 0.8);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 40px 30px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* Иконка */
+.status-icon {
+  position: relative;
+  margin-bottom: 30px;
+}
+
+.icon {
+  font-size: 64px;
+  display: block;
+  margin: 0 auto 20px;
+}
+
+.pulse {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 120px;
+  height: 120px;
+  border: 2px solid rgba(59, 130, 246, 0.3);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+/* Заголовок */
+.title {
+  font-size: 28px;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 20px;
+  background: linear-gradient(45deg, #60a5fa, #a78bfa);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Сообщение */
+.message {
+  margin-bottom: 30px;
+}
+
+.message p {
+  color: #cbd5e1;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+/* Статус */
+.status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+.status-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #22c55e;
+}
+
+.status-dot.pulsing {
+  animation: pulse 1s infinite;
+}
+
+.status-text {
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+/* Кнопка */
+.check-button {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(45deg, #3b82f6, #8b5cf6);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-bottom: 30px;
+}
+
+.check-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+}
+
+.check-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* Информация */
+.info {
+  text-align: left;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.info-title {
+  color: #94a3b8;
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+.info-list {
+  list-style: none;
+  padding: 0;
+}
+
+.info-list li {
+  color: #cbd5e1;
+  font-size: 14px;
+  padding: 8px 0;
+  display: flex;
+  align-items: center;
+}
+
+.info-list li:before {
+  content: "•";
+  color: #60a5fa;
+  margin-right: 10px;
+  font-size: 20px;
+}
+
+/* Анимации */
+@keyframes pulse {
+  0% {
+    opacity: 0.5;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 0.2;
+    transform: translate(-50%, -50%) scale(1.5);
+  }
+}
+
+@keyframes twinkle {
+  0% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Адаптивность */
+@media (max-width: 640px) {
+  .maintenance-content {
+    padding: 30px 20px;
+    margin: 20px;
+  }
+  
+  .icon {
+    font-size: 48px;
+  }
+  
+  .title {
+    font-size: 24px;
+  }
+  
+  .message p {
+    font-size: 14px;
+  }
+}
+/* Исправленная навигационная панель - компактная и центрированная */
+.nav-panel {
+  position: relative;
+  width: 100%;
+  max-width: 600px; /* ТАКОЙ ЖЕ МАКСИМАЛЬНЫЙ РАЗМЕР КАК У ЧАТА */
+  margin: 0 auto 10px; /* auto - центрирует, как у chat-container */
+  padding: 6px 10px;
+  background: linear-gradient(135deg, rgba(0, 13, 26, 0.95), rgba(0, 26, 51, 0.95));
+  border-radius: 10px;
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  box-shadow: 
+    0 4px 20px rgba(0, 255, 255, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+}
+
+/* Убедитесь что основной контейнер чата имеет такие же отступы */
+.chat-container.cosmic-frame {
+  width: 100%;
+  max-width: 600px; /* ДОЛЖНО БЫТЬ ТАКОЕ ЖЕ ЗНАЧЕНИЕ */
+  margin: 0 auto; /* auto - центрирует */
+}
+
+.nav-links {
+  display: flex;
+  justify-content: space-between; /* Равномерное распределение */
+  gap: 4px;
+}
+
+.nav-link {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 3px;
+  background: rgba(0, 34, 68, 0.8);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  border-radius: 6px;
+  color: #00eeff;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 42px; /* Минимальная высота для касания */
+  justify-content: center;
+  text-align: center;
+}
+
+.nav-link:hover {
+  background: rgba(0, 68, 136, 0.9);
+  border-color: #00eeff;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(0, 238, 255, 0.2);
+}
+
+.nav-link.active {
+  background: linear-gradient(135deg, #0066cc, #0099ff);
+  border-color: #00eeff;
+  color: white;
+  box-shadow: 
+    0 0 15px rgba(0, 238, 255, 0.4),
+    inset 0 1px 1px rgba(255, 255, 255, 0.2);
+}
+
+.nav-icon {
+  font-size: 15px;
+  margin-bottom: 3px;
+  transition: transform 0.2s ease;
+}
+
+.nav-link:hover .nav-icon {
+  transform: scale(1.1);
+}
+
+.nav-link.active .nav-icon {
+  transform: scale(1.1);
+}
+
+/* Для выравнивания всего приложения */
+.app.cosmic-app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 15px;
+  min-height: 100vh;
+}
+
+/* Адаптивность для мобильных */
+@media (max-width: 850px) {
+  .nav-panel,
+  .chat-container.cosmic-frame {
+    max-width: 95%; /* На мобильных чуть меньше максимальной ширины */
+  }
+  
+  .nav-panel {
+    padding: 5px 8px;
+    margin-bottom: 8px;
+  }
+  
+  .nav-link {
+    padding: 5px 2px;
+    font-size: 10px;
+    min-height: 38px;
+  }
+  
+  .nav-icon {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 600px) {
+  .nav-panel,
+  .chat-container.cosmic-frame {
+    max-width: 100%; /* На очень маленьких экранах занимаем всю ширину */
+  }
+  
+  .nav-panel {
+    padding: 4px 6px;
+    border-radius: 8px;
+  }
+  
+  .nav-links {
+    gap: 3px;
+  }
+  
+  .nav-link {
+    padding: 4px 1px;
+    font-size: 9px;
+    min-height: 36px;
+    letter-spacing: 0;
+  }
+  
+  .nav-icon {
+    font-size: 12px;
+    margin-bottom: 2px;
+  }
+}
+
+/* Для вертикальной ориентации на очень маленьких экранах */
+@media (max-width: 480px) and (orientation: portrait) {
+  .nav-links {
+    flex-wrap: nowrap; /* Не переносить на новые строки */
+  }
+  
+  .nav-link {
+    font-size: 8px;
+    min-height: 34px;
+    padding: 3px 1px;
+  }
+  
+  .nav-icon {
+    font-size: 11px;
+  }
+}
+
+/* Горизонтальная ориентация на мобильных */
+@media (max-height: 500px) and (orientation: landscape) {
+  .nav-panel {
+    padding: 4px 6px;
+    margin-bottom: 6px;
+    max-width: 90%;
+  }
+  
+  .nav-link {
+    min-height: 32px;
+    padding: 3px 1px;
+  }
+  
+  .app.cosmic-app {
+    padding: 5px 10px;
+  }
+}
+
+/* Корейки для выравнивания всего содержимого */
+.cosmic-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+
+.notifications-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 10000;
+}
+/* Стили для неоновой рамки меню */
+.full-menu-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 2px;
+}
+
+.cosmic-neon-frame {
+  position: relative;
+  border-radius: 15px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.cosmic-neon-frame .neon-border {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 15px;
+  pointer-events: none;
+  z-index: 1;
+  background: linear-gradient(45deg, 
+    #ff00ff, #00ffff, #ff00ff, #00ffff,
+    #ff00ff, #00ffff, #ff00ff, #00ffff);
+  background-size: 400% 400%;
+  animation: neonGlow 3s ease-in-out infinite alternate;
+  opacity: 0.7;
+}
+
+.cosmic-neon-frame .menu-content {
+  position: relative;
+  z-index: 2;
+  background: rgba(10, 10, 20, 0.9);
+  border-radius: 13px;
+  height: 100%;
+  padding: 20px;
   overflow-y: auto;
 }
 
-/* Кастомный скроллбар */
-.overflow-y-auto::-webkit-scrollbar {
-  width: 6px;
+@keyframes neonGlow {
+  0% {
+    background-position: 0% 50%;
+    box-shadow: 0 0 20px rgba(255, 0, 255, 0.7),
+                0 0 40px rgba(255, 0, 255, 0.5),
+                0 0 60px rgba(255, 0, 255, 0.3);
+  }
+  100% {
+    background-position: 100% 50%;
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.7),
+                0 0 50px rgba(0, 255, 255, 0.5),
+                0 0 70px rgba(0, 255, 255, 0.3);
+  }
 }
 
-.overflow-y-auto::-webkit-scrollbar-track {
-  background: #374151;
-  border-radius: 3px;
+/* Адаптация контейнеров меню под рамку */
+.page-content {
+  height: 100%;
+  width: 100%;
 }
 
-.overflow-y-auto::-webkit-scrollbar-thumb {
-  background: #6b7280;
-  border-radius: 3px;
+.page-body {
+  height: calc(100% - 60px);
+  overflow-y: auto;
 }
 
-.overflow-y-auto::-webkit-scrollbar-thumb:hover {
-  background: #9ca3af;
+/* Убедитесь, что контейнеры на страницах меню не конфликтуют с основной рамкой */
+.cosmic-page .page-header {
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
-/* Анимации для счетчика */
+
+.cosmic-page .page-header h2 {
+  color: #00ffff;
+  text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+}
+/* Стили для отступов текста */
+.content-section.with-padding {
+  margin-bottom: 25px;
+  padding: 20px;
+}
+
+.cosmic-card.with-padding {
+  padding: 25px !important;
+}
+
+.cosmic-section.with-padding {
+  padding: 25px !important;
+}
+
+.faq-item.with-padding {
+  padding: 20px !important;
+  margin-bottom: 15px;
+}
+
+.rule-category.with-padding {
+  padding: 25px !important;
+  margin-bottom: 20px;
+}
+
+.news-item.with-padding {
+  padding: 20px !important;
+  margin-bottom: 15px;
+}
+
+.feature-upcoming.with-padding {
+  padding: 20px !important;
+  margin-bottom: 15px;
+}
+
+/* Стили для космического текста */
+.cosmic-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  background: linear-gradient(45deg, #00ffff, #ff00ff, #00ffff);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientShift 3s ease infinite;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.cosmic-subtitle {
+  font-size: 1.2rem;
+  color: #a0a0ff;
+  text-align: center;
+  margin-bottom: 30px;
+  opacity: 0.9;
+}
+
+.cosmic-section-title {
+  font-size: 1.8rem;
+  color: #00ffff;
+  margin-bottom: 25px;
+  text-align: center;
+  text-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+  position: relative;
+  padding-bottom: 10px;
+}
+
+.cosmic-section-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 25%;
+  right: 25%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #00ffff, transparent);
+}
+
+.cosmic-card-title {
+  font-size: 1.4rem;
+  color: #ffffff;
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+
+.cosmic-card-text {
+  color: #ccccff;
+  line-height: 1.6;
+  font-size: 1rem;
+}
+
+/* Стили для статистики */
+.cosmic-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 25px;
+  margin-top: 20px;
+}
+
+.cosmic-stat-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 15px;
+  padding: 30px 20px;
+  text-align: center;
+  position: relative;
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.cosmic-stat-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(255, 0, 255, 0.4);
+  box-shadow: 0 10px 30px rgba(0, 255, 255, 0.2);
+}
+
+.cosmic-stat-number {
+  font-size: 3rem;
+  font-weight: 800;
+  background: linear-gradient(45deg, #ff00ff, #00ffff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 10px;
+}
+
+.cosmic-stat-label {
+  font-size: 1.1rem;
+  color: #ffffff;
+  font-weight: 500;
+}
+
+.stat-glow {
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border-radius: 17px;
+  background: linear-gradient(45deg, #ff00ff, transparent, #00ffff);
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.cosmic-stat-card:hover .stat-glow {
+  opacity: 0.3;
+}
+
+/* Стили для списков */
+.cosmic-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+.cosmic-list li {
+  padding: 12px 0;
+  padding-left: 40px;
+  position: relative;
+  color: #e0e0ff;
+  line-height: 1.6;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.cosmic-list li:last-child {
+  border-bottom: none;
+}
+
+.cosmic-list li::before {
+  content: '•';
+  position: absolute;
+  left: 15px;
+  color: #00ffff;
+  font-size: 1.5rem;
+}
+
+/* Стили для категорий */
+.cosmic-category-title {
+  font-size: 1.5rem;
+  color: #ffffff;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid rgba(0, 255, 255, 0.3);
+}
+
+/* Стили для наказаний */
+.cosmic-punishment-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px;
+  margin-bottom: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  border-left: 4px solid #ff4757;
+}
+
+.cosmic-punishment-level {
+  color: #ff6b6b;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.cosmic-punishment-desc {
+  color: #e0e0ff;
+}
+
+/* Стили для текста */
+.cosmic-text {
+  color: #ccccff;
+  line-height: 1.8;
+  font-size: 1.1rem;
+}
+
+/* Стили для FAQ */
+.cosmic-faq-question {
+  color: #00ffff;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.cosmic-faq-answer {
+  color: #a0a0ff;
+  line-height: 1.6;
+  padding-left: 20px;
+  border-left: 2px solid rgba(0, 255, 255, 0.3);
+}
+
+/* Стили для контактов */
+.contact-text {
+  color: #ccccff;
+  margin-left: 10px;
+}
+
+/* Стили для новостей */
+.cosmic-news-item {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 15px;
+  border-left: 5px solid #3742fa;
+  transition: all 0.3s ease;
+}
+
+.cosmic-news-item:hover {
+  transform: translateX(10px);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.cosmic-news-date {
+  color: #ff6b6b;
+  font-weight: 600;
+  margin-bottom: 10px;
+  font-size: 0.9rem;
+}
+
+.cosmic-news-title {
+  color: #ffffff;
+  font-size: 1.3rem;
+  margin-bottom: 10px;
+}
+
+.cosmic-news-text {
+  color: #ccccff;
+  line-height: 1.6;
+  margin-bottom: 15px;
+}
+
+.cosmic-news-tag {
+  display: inline-block;
+  padding: 5px 15px;
+  background: rgba(0, 255, 255, 0.1);
+  color: #00ffff;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  border: 1px solid rgba(0, 255, 255, 0.3);
+}
+
+/* Стили для планируемых обновлений */
+.cosmic-feature-upcoming {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.cosmic-feature-status {
+  color: #ffd32a;
+  font-size: 0.9rem;
+  margin-bottom: 5px;
+}
+
+.cosmic-feature-name {
+  color: #ffffff;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+/* Анимации */
+@keyframes gradientShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Адаптация */
+@media (max-width: 768px) {
+  .cosmic-stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .cosmic-title {
+    font-size: 2rem;
+  }
+  
+  .content-section.with-padding {
+    padding: 15px;
+  }
+}
+/* Стили для кнопки продолжения оплаты */
+.resume-btn {
+  background: linear-gradient(135deg, #ff9f43, #feca57) !important;
+  animation: pulse-resume 2s infinite;
+}
+
+@keyframes pulse-resume {
+  0% { box-shadow: 0 0 0 0 rgba(255, 159, 67, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(255, 159, 67, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 159, 67, 0); }
+}
+
+.payment-pending-container {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.btn-cancel-payment {
+  width: 40px !important;
+  height: 40px !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  background: linear-gradient(135deg, #ff6b6b, #ee5a52) !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-cancel-payment:hover {
+  transform: scale(1.1) !important;
+  background: linear-gradient(135deg, #ff4757, #ff3838) !important;
+}
+
+/* Индикатор ожидающего платежа */
+.payment-indicator {
+  background: linear-gradient(135deg, rgba(255, 159, 67, 0.2), rgba(254, 202, 87, 0.2));
+  border: 1px solid rgba(255, 159, 67, 0.3);
+  border-radius: 10px;
+  padding: 10px 15px;
+  margin: 10px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: fadeIn 0.5s;
+  backdrop-filter: blur(10px);
+}
+
+.payment-indicator-icon {
+  font-size: 20px;
+  color: #ff9f43;
+}
+
+.payment-indicator-text {
+  font-size: 14px;
+  flex: 1;
+  color: #ff9f43;
+}
+
+.btn-cancel-small {
+  background: linear-gradient(135deg, #ff6b6b, #ee5a52) !important;
+  padding: 5px 10px !important;
+  font-size: 12px !important;
+}
+
+/* Стили для состояния ожидания оплаты */
+.payment-pending {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+}
+
+.spinner-small {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.btn-video-mode:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  background: linear-gradient(135deg, #666, #888) !important;
+}
+
+.btn-video-mode:disabled:hover {
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+/* Стили для системы возобновления оплаты */
+.payment-pending-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.resume-btn {
+  position: relative;
+  background: linear-gradient(135deg, #ff9a00, #ff5e00) !important;
+  animation: pulse-glow 2s infinite;
+}
+
 @keyframes pulse-glow {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
+  0% { box-shadow: 0 0 10px rgba(255, 94, 0, 0.5); }
+  50% { box-shadow: 0 0 20px rgba(255, 94, 0, 0.8); }
+  100% { box-shadow: 0 0 10px rgba(255, 94, 0, 0.5); }
+}
+
+.order-id-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.payment-info-panel {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  padding: 12px;
+  margin-top: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.payment-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 12px;
+}
+
+.payment-info-row:last-child {
+  margin-bottom: 0;
+}
+
+.info-label {
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: bold;
+  margin-right: 8px; /* добавляет пробел между меткой и значением */
+  white-space: nowrap;
+}
+
+.info-value {
+  color: #fff;
+  font-weight: 500;
+}
+
+.info-value.waiting {
+  color: #ff9a00;
+}
+
+.btn-cancel-payment {
+  background: rgba(255, 71, 87, 0.2) !important;
+  border: 1px solid rgba(255, 71, 87, 0.4) !important;
+  color: #ff4757 !important;
+  font-size: 12px !important;
+  padding: 6px 12px !important;
+  align-self: flex-end;
+}
+
+.btn-cancel-payment:hover {
+  background: rgba(255, 71, 87, 0.4) !important;
+}
+
+/* Индикатор совместимости комнат */
+.room-compatibility-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+.room-compatible {
+  background: rgba(46, 213, 115, 0.2);
+  color: #2ed573;
+  border: 1px solid rgba(46, 213, 115, 0.4);
+}
+
+.room-different {
+  background: rgba(255, 165, 0, 0.2);
+  color: #ffa500;
+  border: 1px solid rgba(255, 165, 0, 0.4);
+}
+/* Стили для реальной статистики */
+.live-badge {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 6px;
+  background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: bold;
+  animation: pulse 2s infinite;
+  vertical-align: middle;
+}
+
+.loading-stats {
+  display: inline-block;
+  font-size: 24px;
+}
+
+.loading-dots {
+  display: inline-block;
+  animation: dots 1.5s infinite;
+  color: #54a0ff;
+}
+
+.loading-dots::after {
+  content: '.';
+  animation: dots 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.7; }
+  50% { opacity: 1; }
+  100% { opacity: 0.7; }
+}
+
+@keyframes dots {
+  0%, 20% { content: '.'; }
+  40% { content: '..'; }
+  60%, 100% { content: '...'; }
+}
+
+/* Подсказка при наведении на статистику */
+.stat-card {
+  position: relative;
+  cursor: help;
+}
+
+.stat-card:hover::after {
+  content: 'Данные обновляются каждые 30 секунд';
+  position: absolute;
+  bottom: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 1000;
+}
+/* Стили для тестовых кнопок на главной */
+.test-video-section {
+  background: linear-gradient(135deg, rgba(255, 107, 107, 0.1), rgba(54, 215, 183, 0.1));
+  border-radius: 20px;
+  padding: 25px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.test-video-section::before {
+  content: 'TEST MODE';
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+  color: white;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.section-icon {
+  font-size: 48px;
+  margin-bottom: 15px;
+  display: inline-block;
+  background: linear-gradient(135deg, #54a0ff, #2e86de);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: float 3s ease-in-out infinite;
 }
 
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-2px); }
+  50% { transform: translateY(-10px); }
 }
 
-.online-counter {
-  animation: float 3s ease-in-out infinite;
+.test-buttons-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 25px;
 }
 
-.pulse-dot {
-  animation: pulse-glow 2s ease-in-out infinite;
+.test-btn {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  border-radius: 15px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+  text-align: left;
+  height: 100%;
+  min-height: 100px;
 }
 
-/* Градиентный текст для счетчика */
-.gradient-text {
-  background: linear-gradient(135deg, #a78bfa 0%, #c084fc 50%, #f0abfc 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+.test-btn:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  border-color: rgba(84, 160, 255, 0.3);
+  background: linear-gradient(135deg, rgba(84, 160, 255, 0.15), rgba(46, 134, 222, 0.1));
 }
 
-/* Стили для анимированного фона счетчика */
-.counter-container {
+.test-btn-icon {
+  font-size: 36px;
+  margin-right: 15px;
+  flex-shrink: 0;
+}
+
+.test-btn-content {
+  flex: 1;
+}
+
+.test-btn-title {
+  font-weight: bold;
+  font-size: 16px;
+  margin-bottom: 5px;
+  color: white;
+}
+
+.test-btn-desc {
+  font-size: 12px;
+  opacity: 0.8;
+  color: #aaa;
+}
+
+.cosmic-btn-test {
+  background: linear-gradient(135deg, rgba(84, 160, 255, 0.2), rgba(46, 134, 222, 0.1));
+  border: 1px solid rgba(84, 160, 255, 0.3);
+}
+
+.cosmic-btn-test:hover {
+  background: linear-gradient(135deg, rgba(84, 160, 255, 0.3), rgba(46, 134, 222, 0.2));
+}
+
+.test-instructions {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 15px;
+  padding: 20px;
+  border-left: 4px solid #54a0ff;
+}
+
+.instruction-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.instruction-icon {
+  font-size: 20px;
+  margin-right: 10px;
+  color: #54a0ff;
+}
+
+.instruction-text {
+  font-weight: bold;
+  color: white;
+}
+
+.instruction-list {
+  margin-left: 30px;
+  color: #aaa;
+  line-height: 1.6;
+}
+
+.instruction-list li {
+  margin-bottom: 8px;
   position: relative;
+}
+
+.instruction-list li::before {
+  content: '→';
+  position: absolute;
+  left: -20px;
+  color: #54a0ff;
+}
+
+/* Адаптивность для мобильных */
+@media (max-width: 768px) {
+  .test-buttons-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .test-btn {
+    min-height: auto;
+    padding: 15px;
+  }
+  
+  .test-btn-icon {
+    font-size: 28px;
+    margin-right: 12px;
+  }
+}
+.video-buttons-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.btn-video-test {
+  background: linear-gradient(135deg, #f39c12, #e67e22);
+  border: 1px solid rgba(255, 193, 7, 0.3);
+  color: white;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-video-test:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(243, 156, 18, 0.4);
+}
+
+.btn-video-test:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+/* Обертка для центровки панели управления */
+
+/* ОБЕРТКА ДЛЯ ПАНЕЛИ УПРАВЛЕНИЯ - ВНИЗУ ПО ЦЕНТРУ */
+.cosmic-controls-panel-wrapper {
+  position: fixed;
+  bottom: 20px; /* Фиксированный отступ от нижнего края */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1002; /* Выше чем видео */
+  width: auto;
+  min-width: 550px; /* Уменьшено с 650px */
+  max-width: 650px; /* Уменьшено с 750px */
+  pointer-events: none;
+}
+
+.cosmic-controls-panel-wrapper * {
+  pointer-events: auto;
+}
+
+/* Космическая панель управления - УМЕНЬШЕННЫЙ ВАРИАНТ */
+.cosmic-controls-panel.compact {
+  display: flex;
+  justify-content: center;
+  gap: 12px; /* Уменьшено с 15px */
+  padding: 14px 20px; /* Уменьшено с 18px 25px */
+  background: rgba(0, 5, 15, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 18px; /* Уменьшено с 20px */
+  border: 2px solid #00f7ff;
+  box-shadow: 
+    0 0 25px rgba(0, 247, 255, 0.5),
+    0 10px 35px rgba(0, 0, 0, 0.7),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  position: relative;
+  animation: neon-pulse 2s ease-in-out infinite alternate;
+  min-width: 550px; /* Уменьшено с 650px */
+  max-width: 650px; /* Уменьшено с 750px */
+  margin: 0 auto;
+}
+
+@keyframes neon-pulse {
+  from {
+    box-shadow: 
+      0 0 20px rgba(0, 247, 255, 0.4),
+      0 8px 30px rgba(0, 0, 0, 0.6),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    border-color: #00f7ff;
+  }
+  to {
+    box-shadow: 
+      0 0 30px rgba(0, 247, 255, 0.6),
+      0 12px 40px rgba(0, 0, 0, 0.8),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    border-color: #00ffff;
+  }
+}
+
+/* КНОПКИ - УМЕНЬШЕННЫЕ */
+.cosmic-controls-panel.compact .cosmic-control-btn {
+  min-width: 100px; /* Уменьшено с 120px */
+  width: 100px; /* Уменьшено с 120px */
+  height: 85px; /* Уменьшено с 95px */
+  background: linear-gradient(145deg, 
+    rgba(20, 25, 50, 0.95),
+    rgba(10, 15, 30, 0.95)
+  );
+  border: 2px solid;
+  border-radius: 14px; /* Уменьшено с 16px */
+  padding: 12px 10px; /* Уменьшено с 14px 12px */
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 
+    0 6px 15px rgba(0, 0, 0, 0.3),
+    inset 0 1px 1px rgba(255, 255, 255, 0.05);
+  flex: 0 0 auto;
+}
+
+/* Цвета границ для кнопок */
+.cosmic-controls-panel.compact .btn-mic {
+  border-color: #00f7ff;
+}
+
+.cosmic-controls-panel.compact .btn-mic.muted {
+  border-color: #ff4757;
+}
+
+.cosmic-controls-panel.compact .btn-stop {
+  border-color: #ff4757;
+}
+
+.cosmic-controls-panel.compact .btn-next {
+  border-color: #3742fa;
+}
+
+.cosmic-controls-panel.compact .btn-video-mode {
+  border-color: #ff6b6b;
+}
+
+.cosmic-controls-panel.compact .cosmic-control-btn:hover:not(:disabled) {
+  transform: translateY(-3px) scale(1.03); /* Уменьшено с -4px и 1.04 */
+  border-color: currentColor;
+  box-shadow: 
+    0 12px 25px rgba(0, 0, 0, 0.4),
+    0 0 30px currentColor; /* Уменьшено свечение */
+}
+
+.cosmic-controls-panel.compact .cosmic-control-btn:active:not(:disabled) {
+  transform: translateY(-1px) scale(1.01); /* Уменьшено */
+}
+
+.cosmic-controls-panel.compact .cosmic-control-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  filter: grayscale(0.7);
+  transform: none !important;
+}
+
+/* Внутреннее содержимое */
+.cosmic-controls-panel.compact .btn-inner {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px; /* Уменьшено с 10px */
+  width: 100%;
+}
+
+/* ИКОНКИ - УМЕНЬШЕННЫЕ ДЛЯ ЛУЧШЕЙ ЧИТАЕМОСТИ */
+.cosmic-controls-panel.compact .btn-icon-wrapper {
+  position: relative;
+  width: 34px; /* Уменьшено с 40px */
+  height: 34px; /* Уменьшено с 40px */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cosmic-controls-panel.compact .btn-icon {
+  font-size: 20px; /* Уменьшено с 22px */
+  filter: drop-shadow(0 0 10px currentColor); /* Уменьшено с 12px */
+  z-index: 3;
+  position: relative;
+  transition: transform 0.2s ease;
+  color: white;
+}
+
+.cosmic-controls-panel.compact .cosmic-control-btn:hover .btn-icon {
+  transform: scale(1.15); /* Уменьшено с 1.2 */
+}
+
+/* ТЕКСТ - УЛУЧШЕННАЯ ЧИТАЕМОСТЬ */
+.cosmic-controls-panel.compact .btn-label {
+  font-size: 13px; /* Оптимальный размер для читаемости */
+  font-weight: 700; /* Полужирный для лучшей видимости */
+  color: #ffffff;
+  text-shadow: 
+    0 0 8px rgba(255, 255, 255, 0.8),
+    0 0 15px currentColor; /* Уменьшено с 18px */
+  letter-spacing: 0.8px; /* Уменьшено с 1px */
+  text-transform: uppercase;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.4); /* Более контрастный фон */
+  padding: 3px 8px; /* Уменьшено отступы */
+  border-radius: 5px; /* Уменьшено с 6px */
+  backdrop-filter: blur(2px);
+  width: 100%;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', 'Arial', sans-serif; /* Читаемый шрифт */
+  -webkit-font-smoothing: antialiased; /* Сглаживание для четкости */
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.cosmic-controls-panel.compact .btn-status {
+  font-size: 10px; /* Уменьшено с 11px */
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.95); /* Более яркий цвет */
+  text-shadow: 0 0 6px rgba(255, 255, 255, 0.7); /* Усиленная тень */
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 2px 6px; /* Уменьшено с 2px 8px */
+  border-radius: 3px; /* Уменьшено с 4px */
+  backdrop-filter: blur(2px);
+  font-family: 'Segoe UI', 'Arial', sans-serif;
+}
+
+/* ПРИПОДНИМАЕМ КАМЕРЫ ДЛЯ ПАНЕЛИ */
+.video-container.cosmic-video-container {
+  position: fixed;
+  top: 13vh; /* Увеличено с 10vh - приподнимаем камеры выше */
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 25px; /* Немного уменьшено расстояние между камерами */
+  width: 100%;
+  height: 55vh; /* Уменьшено с 60vh чтобы освободить место */
+  z-index: 1000;
+  padding: 15px; /* Уменьшено с 20px */
+  pointer-events: none;
+}
+
+/* УМЕНЬШАЕМ КАМЕРЫ ЧУТЬ-ЧУТЬ */
+.local-video, .remote-video {
+  width: 38vw; /* Немного уменьшено с 40vw */
+  height: 48vh; /* Немного уменьшено с 50vh */
+  max-width: 580px; /* Уменьшено с 600px */
+  max-height: 430px; /* Уменьшено с 450px */
+  border-radius: 18px; /* Уменьшено с 20px */
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.7);
+  border: 2px solid rgba(0, 247, 255, 0.4);
+  box-shadow: 0 0 35px rgba(0, 247, 255, 0.3); /* Уменьшено свечение */
+  position: relative;
+}
+
+/* АДАПТИВНОСТЬ */
+
+/* Планшеты */
+@media (max-width: 1024px) {
+  .cosmic-controls-panel-wrapper {
+    min-width: 500px; /* Уменьшено */
+    max-width: 600px; /* Уменьшено */
+    bottom: 15px; /* Уменьшено отступ */
+  }
+  
+  .cosmic-controls-panel.compact {
+    min-width: 500px; /* Уменьшено */
+    max-width: 600px; /* Уменьшено */
+    gap: 10px; /* Уменьшено */
+    padding: 12px 18px; /* Уменьшено */
+  }
+  
+  .cosmic-controls-panel.compact .cosmic-control-btn {
+    min-width: 95px; /* Уменьшено */
+    width: 95px; /* Уменьшено */
+    height: 80px; /* Уменьшено */
+    padding: 10px 8px; /* Уменьшено */
+  }
+  
+  /* Камеры для планшетов */
+  .video-container.cosmic-video-container {
+    top: 12vh; /* Приподнимаем меньше */
+    height: 50vh; /* Уменьшаем высоту */
+  }
+  
+  .local-video, .remote-video {
+    width: 42vw; /* Увеличиваем немного для планшетов */
+    height: 45vh; /* Уменьшаем высоту */
+  }
+}
+
+/* Мобильные - горизонтальная ориентация */
+@media (max-width: 768px) and (orientation: landscape) {
+  .cosmic-controls-panel-wrapper {
+    min-width: 450px; /* Уменьшено */
+    max-width: 550px; /* Уменьшено */
+    bottom: 10px; /* Меньший отступ */
+  }
+  
+  .cosmic-controls-panel.compact {
+    min-width: 450px; /* Уменьшено */
+    max-width: 550px; /* Уменьшено */
+    gap: 8px; /* Уменьшено */
+    padding: 10px 15px; /* Уменьшено */
+  }
+  
+  .cosmic-controls-panel.compact .cosmic-control-btn {
+    min-width: 85px; /* Уменьшено */
+    width: 85px; /* Уменьшено */
+    height: 75px; /* Уменьшено */
+    padding: 8px 6px; /* Уменьшено */
+  }
+  
+  /* Камеры для горизонтальных мобильных */
+  .video-container.cosmic-video-container {
+    top: 10vh; /* Приподнимаем меньше */
+    height: 45vh; /* Уменьшаем высоту */
+  }
+  
+  .local-video, .remote-video {
+    width: 45vw; /* Уменьшаем ширину */
+    height: 40vh; /* Уменьшаем высоту */
+  }
+}
+
+/* Мобильные - вертикальная ориентация */
+@media (max-width: 768px) and (orientation: portrait) {
+  .cosmic-controls-panel-wrapper {
+    min-width: 95vw;
+    max-width: 95vw;
+    bottom: 10px; /* Увеличено для удобства */
+  }
+  
+  .cosmic-controls-panel.compact {
+    min-width: 95vw;
+    max-width: 95vw;
+    gap: 6px; /* Уменьшено */
+    padding: 10px 12px; /* Уменьшено */
+    flex-wrap: wrap;
+  }
+  
+  .cosmic-controls-panel.compact .cosmic-control-btn {
+    min-width: calc(50% - 10px); /* Уменьшено отступ */
+    width: calc(50% - 10px);
+    height: 75px; /* Уменьшено */
+    margin-bottom: 6px; /* Уменьшено */
+  }
+  
+  /* Камеры для вертикальных мобильных */
+  .video-container.cosmic-video-container {
+    top: 8vh; /* Приподнимаем выше */
+    height: 65vh; /* Уменьшаем высоту */
+  }
+  
+  .local-video, .remote-video {
+    width: 95vw;
+    height: 28vh; /* Уменьшаем высоту */
+  }
+}
+
+/* Маленькие мобильные */
+@media (max-width: 480px) {
+  .cosmic-controls-panel-wrapper {
+    bottom: 8px; /* Меньший отступ */
+  }
+  
+  .cosmic-controls-panel.compact {
+    padding: 8px 10px; /* Уменьшено */
+    gap: 5px; /* Уменьшено */
+  }
+  
+  .cosmic-controls-panel.compact .cosmic-control-btn {
+    min-width: calc(50% - 6px); /* Уменьшено отступ */
+    width: calc(50% - 6px);
+    height: 70px; /* Уменьшено */
+    padding: 8px 5px; /* Уменьшено */
+  }
+  
+  .cosmic-controls-panel.compact .btn-label {
+    font-size: 12px; /* Еще меньше для мобильных */
+  }
+  
+  /* Камеры для маленьких мобильных */
+  .video-container.cosmic-video-container {
+    top: 6vh; /* Приподнимаем выше */
+    height: 60vh; /* Уменьшаем высоту */
+  }
+  
+  .local-video, .remote-video {
+    height: 26vh; /* Уменьшаем высоту */
+  }
+}
+
+/* Очень маленькие экраны */
+@media (max-width: 360px) {
+  .cosmic-controls-panel.compact {
+    padding: 6px 8px; /* Уменьшено */
+    gap: 4px; /* Уменьшено */
+  }
+  
+  .cosmic-controls-panel.compact .cosmic-control-btn {
+    min-width: calc(50% - 4px); /* Уменьшено отступ */
+    width: calc(50% - 4px);
+    height: 65px; /* Уменьшено */
+    padding: 6px 4px; /* Уменьшено */
+  }
+  
+  .cosmic-controls-panel.compact .btn-label {
+    font-size: 11px; /* Минимальный читаемый размер */
+  }
+}
+
+/* АНИМАЦИЯ ПОЯВЛЕНИЯ */
+@keyframes panel-appear {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.cosmic-controls-panel-wrapper {
+  animation: panel-appear 0.5s ease-out;
+}
+
+/* ГАРАНТИРУЕМ ЧТО ПАНЕЛЬ НЕ НАКЛАДЫВАЕТСЯ НА КАМЕРЫ */
+.local-video, .remote-video {
+  z-index: 1000; /* Видео ниже */
+}
+
+.cosmic-controls-panel-wrapper {
+  z-index: 1002; /* Панель выше */
+}
+
+/* УБИРАЕМ ДОПОЛНИТЕЛЬНЫЙ МАРГИН ТЕПЕРЬ ЭТО НЕ НУЖНО */
+/* .video-container.cosmic-video-container {
+  margin-bottom: 150px; 
+} */
+
+/* ОПЦИОНАЛЬНО: РАЗДЕЛИТЕЛЬНАЯ ЛИНИЯ МЕЖДУ ВИДЕО И ПАНЕЛЬЮ */
+.video-container.cosmic-video-container::after {
+  content: '';
+  position: absolute;
+  bottom: -0px; /* Поднимаем линию выше (ближе к камерам) */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 1px;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(0, 247, 255, 0.3), 
+    rgba(0, 247, 255, 0.5),
+    rgba(0, 247, 255, 0.3),
+    transparent
+  );
+  z-index: 1001;
+  pointer-events: none;
+}
+
+/* СКРЫВАЕМ ЧАТ НА ЗАДНЕМ ФОНЕ В ВИДЕО-РЕЖИМЕ */
+.video-container.cosmic-video-container ~ *:not(.cosmic-controls-panel-wrapper):not(.notifications-container) {
+  display: none !important; /* Скрываем все элементы кроме панели управления и уведомлений */
+}
+
+/* ОСНОВНОЙ APP В ВИДЕО-РЕЖИМЕ - ТОЛЬКО КОСМИЧЕСКИЙ ФОН */
+.app.cosmic-app.video-mode-active {
+  background: transparent !important;
+}
+
+/* УБЕДИМСЯ ЧТО КОСМИЧЕСКИЙ ФОН ЗАНИМАЕТ ВСЮ ПЛОЩАДЬ */
+.cosmic-background {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: -1 !important;
+  opacity: 1 !important;
+}
+
+/* ЗВЕЗДЫ - БОЛЕЕ ЯРКИЕ И ЗАМЕТНЫЕ */
+.stars {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(2px 2px at 20px 30px, rgba(238, 238, 238, 0.8), transparent),
+    radial-gradient(2px 2px at 40px 70px, rgba(255, 255, 255, 0.9), transparent),
+    radial-gradient(2px 2px at 60px 20px, rgba(238, 238, 238, 0.7), transparent),
+    radial-gradient(2px 2px at 80px 50px, rgba(255, 255, 255, 0.8), transparent),
+    radial-gradient(2px 2px at 100px 80px, rgba(238, 238, 238, 0.6), transparent),
+    radial-gradient(2px 2px at 120px 40px, rgba(255, 255, 255, 0.7), transparent),
+    radial-gradient(2px 2px at 140px 60px, rgba(238, 238, 238, 0.8), transparent),
+    radial-gradient(2px 2px at 160px 90px, rgba(255, 255, 255, 0.6), transparent),
+    radial-gradient(2px 2px at 180px 30px, rgba(238, 238, 238, 0.7), transparent),
+    radial-gradient(2px 2px at 200px 70px, rgba(255, 255, 255, 0.8), transparent);
+  background-repeat: repeat;
+  background-size: 220px 200px;
+  animation: stars-animation 120s linear infinite;
+}
+
+/* КОСМИЧЕСКОЕ СВЕЧЕНИЕ - ЯРЧЕ */
+.cosmic-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 120%;
+  height: 120%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(99, 102, 241, 0.15) 0%,
+    rgba(139, 92, 246, 0.1) 20%,
+    rgba(6, 182, 212, 0.05) 40%,
+    transparent 70%
+  );
+  animation: cosmic-pulse 8s ease-in-out infinite alternate;
+}
+
+@keyframes cosmic-pulse {
+  0% {
+    opacity: 0.3;
+    transform: translate(-50%, -50%) scale(0.95);
+  }
+  100% {
+    opacity: 0.6;
+    transform: translate(-50%, -50%) scale(1.05);
+  }
+}
+
+/* ИКОНКА УВЕЛИЧЕНИЯ КАМЕРЫ СОБЕСЕДНИКА */
+.remote-video {
+  position: relative;
+}
+
+.zoom-control {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
+}
+
+.zoom-control:hover {
+  opacity: 1;
+}
+
+.zoom-button {
+  width: 40px;
+  height: 40px;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 247, 255, 0.4);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: white;
+  font-size: 18px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.zoom-button:hover {
+  background: rgba(0, 247, 255, 0.2);
+  border-color: #00f7ff;
+  transform: scale(1.1);
+  box-shadow: 0 0 15px rgba(0, 247, 255, 0.5);
+}
+
+.zoom-button:active {
+  transform: scale(0.95);
+}
+
+.zoom-button.zoom-in::before {
+  content: '+';
+  font-weight: bold;
+}
+
+.zoom-button.zoom-out::before {
+  content: '−';
+  font-weight: bold;
+}
+
+.zoom-indicator {
+  position: absolute;
+  top: 60px;
+  right: 15px;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 247, 255, 0.3);
+  border-radius: 20px;
+  padding: 6px 12px;
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  display: none;
+  animation: fadeIn 0.3s ease;
+}
+
+.zoom-button:hover + .zoom-indicator {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* КНОПКА ПОЛНОЭКРАННОГО РЕЖИМА КАМЕРЫ */
+.fullscreen-button {
+  width: 40px;
+  height: 40px;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 247, 255, 0.4);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: white;
+  font-size: 16px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.fullscreen-button:hover {
+  background: rgba(0, 247, 255, 0.2);
+  border-color: #00f7ff;
+  transform: scale(1.1);
+  box-shadow: 0 0 15px rgba(0, 247, 255, 0.5);
+}
+
+.fullscreen-button.fullscreen-active {
+  background: rgba(0, 247, 255, 0.3);
+  border-color: #00ffff;
+  color: #00ffff;
+}
+
+/* СТИЛИ ДЛЯ УВЕЛИЧЕННОЙ КАМЕРЫ */
+.remote-video.zoomed .video-element {
+  transform: scale(1.2);
+  transform-origin: center center;
+  transition: transform 0.3s ease;
+}
+
+/* ОБНОВЛЯЕМ HTML КАМЕРЫ СОБЕСЕДНИКА С ИКОНКАМИ УВЕЛИЧЕНИЯ */
+/* Добавьте этот код в ваш JSX для remote-video: */
+/*
+<div className="remote-video">
+  <video ref={remoteVideoRef} autoPlay playsInline className="video-element" />
+  <div className="video-label">👽 Собеседник</div>
+  
+  <div className="zoom-control">
+    <button className="zoom-button zoom-in" title="Увеличить"></button>
+    <div className="zoom-indicator">Увеличить</div>
+    <button className="zoom-button zoom-out" title="Уменьшить"></button>
+    <div className="zoom-indicator">Уменьшить</div>
+    <button className="fullscreen-button" title="Полный экран">⎚</button>
+    <div className="zoom-indicator">Полный экран</div>
+  </div>
+  
+  <div className="video-volume-control">
+    {showVolumeControl && (
+      <div className="volume-popup">
+        <span className="volume-icon">🔈</span>
+        <input
+          type="range"
+          min="0"
+          max="1"
+          step="0.01"
+          value={volume}
+          onChange={(e) => setVolume(parseFloat(e.target.value))}
+          className="volume-slider horizontal"
+        />
+        <span className="volume-icon">🔊</span>
+      </div>
+    )}
+  </div>
+</div>
+*/
+
+/* АДАПТИВНОСТЬ ДЛЯ ИКОНОК УВЕЛИЧЕНИЯ */
+@media (max-width: 768px) {
+  .zoom-control {
+    top: 10px;
+    right: 10px;
+    gap: 6px;
+  }
+  
+  .zoom-button,
+  .fullscreen-button {
+    width: 35px;
+    height: 35px;
+    font-size: 16px;
+  }
+  
+  .zoom-indicator {
+    top: 50px;
+    right: 10px;
+    font-size: 11px;
+    padding: 5px 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .zoom-control {
+    top: 8px;
+    right: 8px;
+    gap: 4px;
+  }
+  
+  .zoom-button,
+  .fullscreen-button {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+  
+  .zoom-indicator {
+    top: 45px;
+    font-size: 10px;
+    padding: 4px 8px;
+  }
+}
+
+/* УЛУЧШАЕМ ВИДИМОСТЬ ЛЕЙБЛОВ КАМЕР */
+.video-label {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 8px 15px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ДОБАВЛЯЕМ ФУНКЦИОНАЛЬНОСТЬ ДЛЯ JS */
+/* Добавьте эти состояния и функции в ваш React компонент: */
+/*
+const [zoomLevel, setZoomLevel] = useState(1);
+const [isFullscreen, setIsFullscreen] = useState(false);
+
+const handleZoomIn = () => {
+  setZoomLevel(prev => Math.min(prev + 0.1, 2));
+  if (remoteVideoRef.current) {
+    remoteVideoRef.current.style.transform = `scale(${Math.min(zoomLevel + 0.1, 2)})`;
+  }
+};
+
+const handleZoomOut = () => {
+  setZoomLevel(prev => Math.max(prev - 0.1, 1));
+  if (remoteVideoRef.current) {
+    remoteVideoRef.current.style.transform = `scale(${Math.max(zoomLevel - 0.1, 1)})`;
+  }
+};
+
+const handleFullscreen = () => {
+  if (!document.fullscreenElement && remoteVideoRef.current) {
+    remoteVideoRef.current.requestFullscreen().then(() => {
+      setIsFullscreen(true);
+    }).catch(err => {
+      console.log('Ошибка полноэкранного режима:', err);
+    });
+  } else {
+    document.exitFullscreen();
+    setIsFullscreen(false);
+  }
+};
+
+// Добавьте обработчики для кнопок в JSX:
+// onClick={handleZoomIn} на zoom-in button
+// onClick={handleZoomOut} на zoom-out button
+// onClick={handleFullscreen} на fullscreen-button
+*/
+
+/* СКРЫВАЕМ ВСЕ ЭЛЕМЕНТЫ ЧАТА В ВИДЕО-РЕЖИМЕ */
+.video-container.cosmic-video-container ~ .chat-container,
+.video-container.cosmic-video-container ~ .nav-panel {
+  display: none !important;
+}
+
+/* УВЕЛИЧИВАЕМ АНИМАЦИЮ ЗВЕЗД */
+@keyframes stars-animation {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-200px);
+  }
+}
+
+/* ДОБАВЛЯЕМ НЕБУЛЫ ДЛЯ БОЛЕЕ БОГАТОГО КОСМИЧЕСКОГО ФОНА */
+.nebula-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 30% 30%, rgba(99, 102, 241, 0.1) 0%, transparent 40%),
+    radial-gradient(circle at 70% 70%, rgba(139, 92, 246, 0.1) 0%, transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(6, 182, 212, 0.05) 0%, transparent 40%);
+  z-index: -1;
+  pointer-events: none;
+  animation: nebula-drift 20s infinite alternate ease-in-out;
+}
+
+@keyframes nebula-drift {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    transform: translate(50px, 30px) scale(1.1);
+  }
+}
+
+/* КНОПКИ - УЛУЧШЕННЫЙ ВАРИАНТ С УМЕНЬШЕННЫМИ ИКОНКАМИ */
+.cosmic-controls-panel.compact .cosmic-control-btn {
+  min-width: 100px;
+  width: 100px;
+  height: 85px;
+  background: linear-gradient(145deg, 
+    rgba(20, 25, 50, 0.95),
+    rgba(10, 15, 30, 0.95)
+  );
+  border: 2px solid;
+  border-radius: 14px;
+  padding: 10px 8px; /* Уменьшены отступы */
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; /* Центрируем содержимое */
+  overflow: hidden;
+  position: relative;
+  box-shadow: 
+    0 6px 15px rgba(0, 0, 0, 0.3),
+    inset 0 1px 1px rgba(255, 255, 255, 0.05);
+  flex: 0 0 auto;
+}
+
+/* Внутреннее содержимое - БОЛЕЕ КОМПАКТНОЕ */
+.cosmic-controls-panel.compact .btn-inner {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px; /* Уменьшен разрыв между иконкой и текстом */
+  width: 100%;
+  height: 100%;
+  justify-content: center; /* Центрируем всё содержимое */
+}
+
+/* ИКОНКИ - УМЕНЬШЕННЫЕ И БЛИЖЕ К ТЕКСТУ */
+.cosmic-controls-panel.compact .btn-icon-wrapper {
+  position: relative;
+  width: 32px; /* Уменьшено с 34px */
+  height: 32px; /* Уменьшено с 34px */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2px; /* Небольшой отступ от текста */
+}
+
+.cosmic-controls-panel.compact .btn-icon {
+  font-size: 18px; /* Уменьшено с 20px */
+  filter: drop-shadow(0 0 8px currentColor); /* Уменьшено свечение */
+  z-index: 3;
+  position: relative;
+  transition: transform 0.2s ease;
+  color: white;
+}
+
+.cosmic-controls-panel.compact .cosmic-control-btn:hover .btn-icon {
+  transform: scale(1.1); /* Уменьшен эффект при наведении */
+}
+
+/* Неоновое свечение для иконок - УМЕНЬШЕННОЕ */
+.cosmic-controls-panel.compact .btn-icon-glow {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  filter: blur(10px); /* Уменьшено размытие */
+  animation: icon-glow-pulse-compact 2s ease-in-out infinite alternate;
+  opacity: 0.4; /* Уменьшена прозрачность */
+}
+
+/* ТЕКСТ - УЛУЧШЕННАЯ ЧИТАЕМОСТЬ */
+.cosmic-controls-panel.compact .btn-label {
+  font-size: 12px; /* Оптимальный размер для читаемости */
+  font-weight: 700;
+  color: #ffffff;
+  text-shadow: 
+    0 0 6px rgba(255, 255, 255, 0.8),
+    0 0 12px currentColor; /* Уменьшено свечение */
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 2px 6px; /* Уменьшены отступы */
+  border-radius: 4px;
+  backdrop-filter: blur(2px);
+  width: 100%;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', 'Arial', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.2; /* Улучшен межстрочный интервал */
+  margin-top: 2px; /* Небольшой отступ от иконки */
+}
+
+.cosmic-controls-panel.compact .cosmic-control-btn:hover .btn-label {
+  text-shadow: 
+    0 0 8px rgba(255, 255, 255, 0.9),
+    0 0 15px currentColor;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.cosmic-controls-panel.compact .btn-status {
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.95);
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.7);
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 1px 5px; /* Уменьшены отступы */
+  border-radius: 3px;
+  backdrop-filter: blur(1px);
+  font-family: 'Segoe UI', 'Arial', sans-serif;
+  line-height: 1.1;
+}
+
+/* Общее свечение кнопки - УМЕНЬШЕННОЕ */
+.cosmic-controls-panel.compact .btn-glow {
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  right: -1px;
+  bottom: -1px;
+  border-radius: 13px; /* Соответствует радиусу кнопки */
+  background: radial-gradient(circle at center, 
+    transparent 40%, 
+    rgba(0, 247, 255, 0.05) 70% /* Уменьшена интенсивность */
+  );
+  opacity: 0;
+  animation: btn-glow-pulse-compact 4s ease-in-out infinite;
+  z-index: 1;
+}
+
+.cosmic-controls-panel.compact .cosmic-control-btn:hover .btn-glow {
+  opacity: 0.2; /* Уменьшена прозрачность */
+  animation: btn-glow-pulse-compact 2s ease-in-out infinite;
+}
+
+/* Цвета для свечения кнопок - УМЕНЬШЕННЫЕ */
+.cosmic-controls-panel.compact .btn-mic .btn-glow {
+  background: radial-gradient(circle at center, 
+    transparent 40%, 
+    rgba(0, 247, 255, 0.08) 70%
+  );
+}
+
+.cosmic-controls-panel.compact .btn-mic.muted .btn-glow {
+  background: radial-gradient(circle at center, 
+    transparent 40%, 
+    rgba(255, 71, 87, 0.08) 70%
+  );
+}
+
+.cosmic-controls-panel.compact .btn-stop .btn-glow {
+  background: radial-gradient(circle at center, 
+    transparent 40%, 
+    rgba(255, 71, 87, 0.08) 70%
+  );
+}
+
+.cosmic-controls-panel.compact .btn-next .btn-glow {
+  background: radial-gradient(circle at center, 
+    transparent 40%, 
+    rgba(55, 66, 250, 0.08) 70%
+  );
+}
+
+.cosmic-controls-panel.compact .btn-video-mode .btn-glow {
+  background: radial-gradient(circle at center, 
+    transparent 40%, 
+    rgba(255, 107, 107, 0.08) 70%
+  );
+}
+
+/* Анимации для компактного варианта - УМЕНЬШЕННЫЕ */
+@keyframes icon-glow-pulse-compact {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(0.9);
+    filter: blur(8px); /* Уменьшено размытие */
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.03); /* Уменьшено увеличение */
+    filter: blur(12px); /* Уменьшено размытие */
+  }
+}
+
+@keyframes btn-glow-pulse-compact {
+  0%, 100% {
+    opacity: 0.05; /* Уменьшена прозрачность */
+    transform: scale(0.98);
+  }
+  50% {
+    opacity: 0.15; /* Уменьшена прозрачность */
+    transform: scale(1.01); /* Уменьшено увеличение */
+  }
+}
+
+/* АДАПТИВНОСТЬ */
+
+@media (max-width: 1024px) {
+  .cosmic-controls-panel.compact .cosmic-control-btn {
+    min-width: 95px;
+    width: 95px;
+    height: 80px;
+    padding: 8px 6px; /* Уменьшены отступы */
+  }
+  
+  .cosmic-controls-panel.compact .btn-icon-wrapper {
+    width: 30px; /* Уменьшено для планшетов */
+    height: 30px;
+  }
+  
+  .cosmic-controls-panel.compact .btn-icon {
+    font-size: 16px; /* Уменьшено для планшетов */
+  }
+  
+  .cosmic-controls-panel.compact .btn-label {
+    font-size: 11px; /* Немного меньше для планшетов */
+    padding: 2px 5px;
+  }
+}
+
+@media (max-width: 768px) {
+  .cosmic-controls-panel.compact .cosmic-control-btn {
+    min-width: 90px;
+    width: 90px;
+    height: 75px;
+    padding: 7px 5px; /* Уменьшены отступы */
+  }
+  
+  .cosmic-controls-panel.compact .btn-icon-wrapper {
+    width: 28px; /* Уменьшено для мобильных */
+    height: 28px;
+  }
+  
+  .cosmic-controls-panel.compact .btn-icon {
+    font-size: 15px; /* Уменьшено для мобильных */
+  }
+  
+  .cosmic-controls-panel.compact .btn-label {
+    font-size: 10px; /* Немного меньше для мобильных */
+    letter-spacing: 0.5px;
+  }
+  
+  .cosmic-controls-panel.compact .btn-status {
+    font-size: 9px;
+  }
+}
+
+@media (max-width: 480px) {
+  .cosmic-controls-panel.compact .cosmic-control-btn {
+    min-width: calc(50% - 6px);
+    width: calc(50% - 6px);
+    height: 70px;
+    padding: 6px 4px; /* Уменьшены отступы */
+  }
+  
+  .cosmic-controls-panel.compact .btn-inner {
+    gap: 4px; /* Еще меньше разрыв для мобильных */
+  }
+  
+  .cosmic-controls-panel.compact .btn-icon-wrapper {
+    width: 26px; /* Уменьшено для маленьких экранов */
+    height: 26px;
+    margin-bottom: 1px;
+  }
+  
+  .cosmic-controls-panel.compact .btn-icon {
+    font-size: 14px; /* Уменьшено для маленьких экранов */
+  }
+  
+  .cosmic-controls-panel.compact .btn-label {
+    font-size: 10px;
+    padding: 1px 4px;
+    margin-top: 1px;
+  }
+}
+
+@media (max-width: 360px) {
+  .cosmic-controls-panel.compact .cosmic-control-btn {
+    min-width: calc(50% - 4px);
+    width: calc(50% - 4px);
+    height: 65px;
+    padding: 5px 3px; /* Минимальные отступы */
+  }
+  
+  .cosmic-controls-panel.compact .btn-icon-wrapper {
+    width: 24px; /* Минимальный размер */
+    height: 24px;
+  }
+  
+  .cosmic-controls-panel.compact .btn-icon {
+    font-size: 13px; /* Минимальный размер */
+  }
+  
+  .cosmic-controls-panel.compact .btn-label {
+    font-size: 9px; /* Минимальный читаемый размер */
+    letter-spacing: 0.4px;
+  }
+}
+
+
+
+/* Контейнер для предотвращения скрытия контента */
+.tariff-modal .cosmic-modal-body {
+  overflow: visible;
+}
+
+/* ===== СОЦИАЛЬНЫЕ ИКОНКИ - ГОРИЗОНТАЛЬНЫЙ РЯД ===== */
+.social-icons-container {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 40px !important;
+  flex-wrap: nowrap !important; /* Никакого переноса на новую строку */
+  margin: 30px 0 !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  overflow-x: auto !important; /* Если совсем не влезают - появляется скролл */
+  padding: 10px 5px !important;
+  -webkit-overflow-scrolling: touch !important; /* Плавный скролл на iOS */
+}
+
+.social-icon {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-decoration: none !important;
+  color: white !important;
+  transition: all 0.3s ease !important;
+  padding: 15px !important;
+  border-radius: 16px !important;
+  background: rgba(0, 0, 0, 0.4) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  min-width: 100px !important;
+  cursor: pointer !important;
+  backdrop-filter: blur(5px) !important;
+  flex-shrink: 0 !important; /* Запрещаем сжиматься */
+}
+
+.social-icon:hover {
+  transform: translateY(-5px) !important;
+  border-color: currentColor !important;
+  box-shadow: 0 8px 25px currentColor !important;
+  background: rgba(0, 0, 0, 0.6) !important;
+}
+
+.social-icon svg {
+  font-size: 48px !important;
+  margin-bottom: 10px !important;
+  transition: transform 0.3s ease !important;
+}
+
+.social-icon:hover svg {
+  transform: scale(1.1) !important;
+}
+
+.social-icon-label {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: #fff !important;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.5) !important;
+  letter-spacing: 0.5px !important;
+  white-space: nowrap !important;
+}
+
+/* Индивидуальные цвета при наведении */
+.social-icon:nth-child(1):hover {
+  border-color: #0088cc !important;
+  box-shadow: 0 8px 25px rgba(0, 136, 204, 0.5) !important;
+}
+
+.social-icon:nth-child(2):hover {
+  border-color: #4C75A3 !important;
+  box-shadow: 0 8px 25px rgba(76, 117, 163, 0.5) !important;
+}
+
+.social-icon:nth-child(3):hover {
+  border-color: #000000 !important;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* ===== МОБИЛЬНАЯ АДАПТАЦИЯ ===== */
+
+/* Планшеты (до 1024px) */
+@media (max-width: 1024px) {
+  .social-icons-container {
+    gap: 30px !important;
+  }
+  
+  .social-icon {
+    min-width: 90px !important;
+    padding: 12px !important;
+  }
+  
+  .social-icon svg {
+    font-size: 42px !important;
+  }
+  
+  .social-icon-label {
+    font-size: 13px !important;
+  }
+}
+
+/* Мобильные устройства (до 768px) - УМЕНЬШАЕМ РАЗМЕРЫ */
+@media (max-width: 768px) {
+  .social-icons-container {
+    gap: 15px !important; /* Сильно уменьшаем отступы */
+    margin: 20px 0 !important;
+    justify-content: space-around !important; /* Равномерное распределение */
+  }
+  
+  .social-icon {
+    min-width: 70px !important; /* Уменьшаем минимальную ширину */
+    padding: 10px 8px !important; /* Уменьшаем отступы */
+    border-radius: 12px !important;
+  }
+  
+  .social-icon svg {
+    font-size: 32px !important; /* Уменьшаем иконки */
+    margin-bottom: 6px !important;
+  }
+  
+  .social-icon-label {
+    font-size: 11px !important; /* Уменьшаем текст */
+  }
+}
+
+/* Маленькие мобильные (до 600px) - ЕЩЕ МЕНЬШЕ */
+@media (max-width: 600px) {
+  .social-icons-container {
+    gap: 12px !important;
+  }
+  
+  .social-icon {
+    min-width: 65px !important;
+    padding: 8px 6px !important;
+  }
+  
+  .social-icon svg {
+    font-size: 28px !important;
+    margin-bottom: 5px !important;
+  }
+  
+  .social-icon-label {
+    font-size: 10px !important;
+  }
+}
+
+/* Очень маленькие мобильные (до 480px) - МИНИМАЛЬНЫЕ РАЗМЕРЫ */
+@media (max-width: 480px) {
+  .social-icons-container {
+    gap: 8px !important; /* Минимальные отступы */
+    margin: 15px 0 !important;
+  }
+  
+  .social-icon {
+    min-width: 55px !important; /* Очень маленькие */
+    padding: 6px 4px !important;
+    border-radius: 10px !important;
+  }
+  
+  .social-icon svg {
+    font-size: 24px !important; /* Маленькие иконки */
+    margin-bottom: 4px !important;
+  }
+  
+  .social-icon-label {
+    font-size: 9px !important; /* Очень мелкий текст */
+    letter-spacing: 0.3px !important;
+  }
+}
+
+/* Экстремально маленькие (до 360px) */
+@media (max-width: 360px) {
+  .social-icons-container {
+    gap: 5px !important;
+  }
+  
+  .social-icon {
+    min-width: 50px !important;
+    padding: 5px 3px !important;
+  }
+  
+  .social-icon svg {
+    font-size: 22px !important;
+    margin-bottom: 3px !important;
+  }
+  
+  .social-icon-label {
+    font-size: 8px !important;
+  }
+}
+
+/* Горизонтальная ориентация на мобильных */
+@media (max-height: 500px) and (orientation: landscape) {
+  .social-icons-container {
+    gap: 20px !important;
+    margin: 15px 0 !important;
+  }
+  
+  .social-icon {
+    min-width: 80px !important;
+    padding: 8px !important;
+    flex-direction: row !important; /* В ландшафте иконки могут быть горизонтально */
+    gap: 8px !important;
+  }
+  
+  .social-icon svg {
+    font-size: 28px !important;
+    margin-bottom: 0 !important;
+  }
+  
+  .social-icon-label {
+    font-size: 12px !important;
+  }
+}
+
+/* Для очень маленьких экранов в ландшафтной ориентации */
+@media (max-height: 400px) and (orientation: landscape) {
+  .social-icons-container {
+    gap: 15px !important;
+  }
+  
+  .social-icon {
+    min-width: 70px !important;
+    padding: 6px !important;
+  }
+  
+  .social-icon svg {
+    font-size: 24px !important;
+  }
+  
+  .social-icon-label {
+    font-size: 10px !important;
+  }
+}
+
+/* Анимация появления */
+@keyframes socialAppear {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.social-icon {
+  animation: socialAppear 0.5s ease-out forwards !important;
+}
+
+/* Задержки для каждой иконки */
+.social-icon:nth-child(1) {
+  animation-delay: 0.1s !important;
+}
+
+.social-icon:nth-child(2) {
+  animation-delay: 0.2s !important;
+}
+
+.social-icon:nth-child(3) {
+  animation-delay: 0.3s !important;
+}
+
+/* Скрываем скроллбар для чистоты дизайна (опционально) */
+.social-icons-container::-webkit-scrollbar {
+  display: none !important;
+}
+
+.social-icons-container {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+
+/* ===== ЗАЩИТА ОТ СКРИНШОТОВ ===== */
+.screenshot-protection {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(255, 0, 0, 0.05) 0px,
+    rgba(255, 0, 0, 0.05) 10px,
+    rgba(0, 0, 255, 0.05) 10px,
+    rgba(0, 0, 255, 0.05) 20px
+  );
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  z-index: 999;
+  opacity: 0.5;
+  animation: protectShift 3s infinite alternate;
+}
+
+@keyframes protectShift {
+  0% { background-position: 0 0; }
+  100% { background-position: 20px 20px; }
+}
+
+/* Водяной знак с ID пользователя */
+.video-watermark {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 10px;
+  z-index: 1000;
+  pointer-events: none;
+  font-family: monospace;
+  text-shadow: 0 0 5px black;
+  white-space: nowrap;
+}
+
+/* Второй водяной знак */
+.video-watermark-right {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: rgba(255, 255, 255, 0.2);
+  font-size: 12px;
+  z-index: 1000;
+  pointer-events: none;
+  transform: rotate(90deg);
+  transform-origin: right top;
+}
+
+/* Мигающее предупреждение при попытке скриншота */
+.screenshot-warning {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 0, 0, 0.9);
+  color: white;
+  padding: 20px 40px;
+  border-radius: 10px;
+  font-size: 24px;
+  font-weight: bold;
+  z-index: 10000;
+  animation: warningFlash 0.5s ease-out;
+  border: 2px solid white;
+  box-shadow: 0 0 50px red;
+}
+
+@keyframes warningFlash {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+  50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(1); }
+}
+
+/* Затемнение при подозрении на скриншот */
+.screenshot-dim {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 9999;
+  animation: fadeOut 1s forwards;
+}
+
+@keyframes fadeOut {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* Защита контекстного меню */
+.no-context {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Дополнительная защита для видео */
+.video-protected {
+  filter: brightness(0.95) contrast(1.05);
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Космический фон с планетами */
+.cosmic-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  background: linear-gradient(45deg, #020617 0%, #0f172a 50%, #1e1b4b 100%);
   overflow: hidden;
 }
 
-.counter-container::before {
-  content: '';
+/* Анимация для звезд */
+.stars {
   position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle, rgba(168, 85, 247, 0.1) 0%, transparent 70%);
-  animation: rotate-background 10s linear infinite;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(2px 2px at 20px 30px, rgba(255,255,255,0.8), transparent),
+    radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.6), transparent),
+    radial-gradient(1px 1px at 60px 20px, rgba(255,255,255,0.9), transparent),
+    radial-gradient(2px 2px at 80px 50px, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1px 1px at 100px 80px, rgba(255,255,255,0.7), transparent),
+    radial-gradient(2px 2px at 120px 40px, rgba(255,255,255,0.4), transparent),
+    radial-gradient(1px 1px at 140px 60px, rgba(255,255,255,0.8), transparent),
+    radial-gradient(2px 2px at 160px 90px, rgba(255,255,255,0.6), transparent),
+    radial-gradient(1px 1px at 180px 30px, rgba(255,255,255,0.5), transparent),
+    radial-gradient(2px 2px at 200px 70px, rgba(255,255,255,0.7), transparent);
+  background-repeat: repeat;
+  background-size: 250px 250px;
+  animation: stars-animation 80s linear infinite;
 }
 
-@keyframes rotate-background {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-@keyframes twinkle {
-  0%, 100% { opacity: 0.2; }
-  50% { opacity: 1; }
+@keyframes stars-animation {
+  from { transform: translateY(0); }
+  to { transform: translateY(-250px); }
 }
 
-.animate-twinkle {
-  animation: twinkle 3s ease-in-out infinite;
+/* Небула - туманность для атмосферы */
+.nebula-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 20% 30%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(6, 182, 212, 0.05) 0%, transparent 60%),
+    radial-gradient(circle at 30% 80%, rgba(245, 158, 11, 0.04) 0%, transparent 50%);
+  pointer-events: none;
+  animation: nebula-pulse 15s infinite alternate;
 }
-/* Dark mode optimizations */
-@media (prefers-color-scheme: dark) {
-  body {
-    background-color: #111827;
-    color: #F9FAFB;
-  }
-.absolute.z-20 {
-  z-index: 50 !important;
-}
-@keyframes scale-in {
+
+@keyframes nebula-pulse {
   0% {
-    opacity: 0;
-    transform: scale(0.9);
+    opacity: 0.5;
+    transform: scale(1);
   }
   100% {
     opacity: 1;
-    transform: scale(1);
+    transform: scale(1.05);
   }
 }
 
-.animate-scale-in {
-  animation: scale-in 0.3s ease-out;
+/* Анимации для модального окна */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
-.backdrop-blur-sm {
-  backdrop-filter: blur(4px);
+@keyframes neonLine {
+  0% {
+    opacity: 0.5;
+    transform: translateX(-10px);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(10px);
+  }
+  100% {
+    opacity: 0.5;
+    transform: translateX(-10px);
+  }
 }
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.2);
+  }
+}
+
+/* Анимация пульсации */
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scaleY(1); }
+    50% { opacity: 0.5; transform: scaleY(0.5); }
+}
+
+.delay-75 { animation-delay: 0.15s; }
+.delay-150 { animation-delay: 0.3s; }
+
+/* Эмодзи пикер */
+.emoji-item {
+    transition: all 0.15s ease;
+}
+
+.emoji-item:hover {
+    transform: scale(1.2);
+    background: rgba(59,130,246,0.3);
+}
+
+/* Кастомный скролл */
+.custom-scroll::-webkit-scrollbar {
+    width: 5px;
+}
+.custom-scroll::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.05);
+    border-radius: 10px;
+}
+.custom-scroll::-webkit-scrollbar-thumb {
+    background: rgba(59,130,246,0.5);
+    border-radius: 10px;
+}
+.custom-scroll::-webkit-scrollbar-thumb:hover {
+    background: rgba(59,130,246,0.8);
+}
+
+/* Контейнер чата */
+.chat-container {
+    backdrop-filter: blur(4px);
+}
+
+/* Анимация для записи */
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scaleY(1); }
+    50% { opacity: 0.5; transform: scaleY(0.5); }
+}
+
+.delay-75 { animation-delay: 0.15s; }
+.delay-150 { animation-delay: 0.3s; }
+
+/* Кастомный скролл для чата */
+.custom-scroll::-webkit-scrollbar {
+    width: 5px;
+}
+.custom-scroll::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.05);
+    border-radius: 10px;
+}
+.custom-scroll::-webkit-scrollbar-thumb {
+    background: rgba(59,130,246,0.5);
+    border-radius: 10px;
+}
+.custom-scroll::-webkit-scrollbar-thumb:hover {
+    background: rgba(59,130,246,0.8);
+}
+
+/* Сообщения чата */
+.chat-message {
+    display: flex;
+    gap: 10px;
+    animation: fadeInUp 0.2s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.chat-message-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.chat-message-content {
+    flex: 1;
+    max-width: calc(100% - 46px);
+}
+
+.chat-message-sender {
+    font-size: 0.7rem;
+    color: #9ca3af;
+    margin-bottom: 4px;
+}
+
+.chat-message-text {
+    background: rgba(59,130,246,0.15);
+    padding: 8px 14px;
+    border-radius: 18px;
+    border-top-left-radius: 4px;
+    display: inline-block;
+    max-width: 100%;
+    word-wrap: break-word;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.chat-message-moderator .chat-message-text {
+    background: rgba(59,130,246,0.2);
+    border-left: 3px solid #3b82f6;
+}
+
+.chat-message-admin .chat-message-text {
+    background: rgba(239,68,68,0.15);
+    border-left: 3px solid #ef4444;
+}
+
+.chat-message-file .chat-message-text {
+    background: rgba(100,100,100,0.2);
+    border-left: 3px solid #9ca3af;
+}
+
+.chat-message-voice .chat-message-text {
+    background: rgba(16,185,129,0.15);
+    border-left: 3px solid #10b981;
+    padding: 6px 12px;
+}
+
+.chat-message-voice audio {
+    height: 36px;
+    border-radius: 20px;
+}
+
+/* Предпросмотр */
+.preview-container {
+    background: rgba(0,0,0,0.6);
+    border-radius: 12px;
+    padding: 8px 12px;
+}
+
+.voice-preview, .file-preview {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8rem;
+}
+
+.voice-preview audio {
+    height: 32px;
+}
+
+/* Анимации для космического фона */
+@keyframes starTwinkle {
+  0%, 100% { opacity: 0.2; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.1); }
+}
+
+@keyframes floatSpace {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(12px, -15px) rotate(3deg); }
+  50% { transform: translate(-8px, -25px) rotate(-2deg); }
+  75% { transform: translate(15px, -10px) rotate(5deg); }
+}
+
+@keyframes rocketFly {
+  0% { transform: translateX(-100px) translateY(0) rotate(0deg); opacity: 0; }
+  10% { opacity: 0.7; }
+  50% { opacity: 0.9; }
+  90% { opacity: 0.7; }
+  100% { transform: translateX(calc(100vw + 100px)) translateY(-30px) rotate(8deg); opacity: 0; }
+}
+
+@keyframes planetRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes micPulse {
+  0%, 100% { filter: drop-shadow(0 0 4px #00ffff); transform: scale(1); }
+  50% { filter: drop-shadow(0 0 10px #00ffff); transform: scale(1.08); }
+}
+
+@keyframes floatMic {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-15px) rotate(10deg); }
+}
+
+@keyframes floatCamera {
+  0%, 100% { transform: translateX(0px) rotate(0deg); }
+  33% { transform: translateX(10px) rotate(8deg); }
+  66% { transform: translateX(-8px) rotate(-4deg); }
 }
